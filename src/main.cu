@@ -9,7 +9,7 @@
 #include "../lib/constants.cuh"
  
 int main() {
-    const int arraySize = 1000;
+    const int arraySize = 60;
     unsigned int hdata[arraySize];
     unsigned int ddata_glob[arraySize];
 
