@@ -78,7 +78,7 @@ int main() {
 
         // Copy data from device to host for global memory kernel
         cudaMemcpy(hdata, ddata_shared, arraySize * sizeof(unsigned int), cudaMemcpyDeviceToHost);
-        if (isSorted(hdata, arraySize)) {
+        if (isSorted(ddata_shared, arraySize)) {
             printf("Shared memory kernel: Array is sorted correctly.\n");
         } else {
             printf("Shared memory kernel: Array is NOT sorted correctly.\n");
