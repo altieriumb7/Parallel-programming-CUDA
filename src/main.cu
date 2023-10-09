@@ -49,6 +49,13 @@ int main() {
         float elapsedTime_glob;
         cudaEventElapsedTime(&elapsedTime_glob, start_glob, stop_glob);
         totalTime_glob += elapsedTime_glob;
+        cudaMemcpy(hdata, ddata_glob, arraySize * sizeof(unsigned int), cudaMemcpyDeviceToHost);
+
+        if (isSorted(hdata, arraySize)) {
+            printf("Global memory kernel: Array is sorted correctly.\n");
+        } else {
+            printf("Global memory kernel: Array is NOT sorted correctly.\n");
+        }
 
         // Execution time measurement for shared memory kernel
         cudaEvent_t start_shared, stop_shared;
@@ -67,20 +74,24 @@ int main() {
         totalTime_shared += elapsedTime_shared;
 
         // Copy data from device to host for global memory kernel
-        cudaMemcpy(hdata, ddata_glob, arraySize * sizeof(unsigned int), cudaMemcpyDeviceToHost);
-
+        cudaMemcpy(hdata, ddata_shared, arraySize * sizeof(unsigned int), cudaMemcpyDeviceToHost);
+        if (isSorted(hdata, arraySize)) {
+            printf("Shared memory kernel: Array is sorted correctly.\n");
+        } else {
+            printf("Shared memory kernel: Array is NOT sorted correctly.\n");
+        }
         // Free device memory
         cudaFree(ddata_glob);
         cudaFree(ddata_shared);
     }
+    printf("Parallel Radix Sort using Global Memory:\n");
+    printf("Array size = %d\n", arraySize);
+    printf("Time elapsed = %f milliseconds\n", totalTime_glob);
 
-    std::cout << "Parallel Radix Sort using Global Memory:" << std::endl;
-    std::cout << "Array size = " << arraySize << std::endl;
-    std::cout << "Time elapsed = " << totalTime_glob << " milliseconds" << std::endl;
+    printf("\nParallel Radix Sort using Shared Memory:\n");
+    printf("Array size = %d\n", arraySize);
+    printf("Time elapsed = %f milliseconds\n", totalTime_shared);
 
-    std::cout << "\nParallel Radix Sort using Shared Memory:" << std::endl;
-    std::cout << "Array size = " << arraySize << std::endl;
-    std::cout << "Time elapsed = " << totalTime_shared << " milliseconds" << std::endl;
 
     return 0;
 }

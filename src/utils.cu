@@ -27,17 +27,15 @@ __host__ void print_array(const unsigned long *data, const unsigned long long N)
     printf("\n");
 }
 
-bool is_sorted(unsigned long *result, const unsigned long long N)
-{
-    for (unsigned long long i = 0; i < N - 1; i++)
-    {
-        if (result[i] > result[i + 1])
-        {
+bool isSorted(const unsigned int *arr, int size) {
+    for (int i = 0; i < size - 1; i++) {
+        if (arr[i] > arr[i + 1]) {
             return false;
         }
     }
     return true;
 }
+
 
 bool is_power_of_two(const unsigned long x)
 {

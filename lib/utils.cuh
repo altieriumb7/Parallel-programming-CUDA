@@ -16,8 +16,7 @@ void init_array(unsigned long *data, const unsigned long long N);
 __host__ void print_array(const unsigned long *data, const unsigned long long N);
 
 
-bool is_sorted(unsigned long *result, const unsigned long long N);
-
+bool isSorted(const unsigned int *arr, int size);
 bool is_power_of_two(const unsigned long x);
 
 __host__ __device__ void get_max(unsigned long *data, const unsigned long long N, unsigned long *max);
