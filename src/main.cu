@@ -8,10 +8,11 @@
 #include "../lib/utils.cuh"
 #include "../lib/constants.cuh"
  
-
 int main() {
     const int arraySize = 10000;
     unsigned int hdata[arraySize];
+    unsigned int *ddata_glob, *ddata_shared;
+
     float totalTime_glob = 0;
     float totalTime_shared = 0;
 
@@ -24,38 +25,62 @@ int main() {
             hdata[i] = rand() % range;
         }
 
+        cudaMalloc((void**)&ddata_glob, arraySize * sizeof(unsigned int));
+        cudaMalloc((void**)&ddata_shared, arraySize * sizeof(unsigned int));
+
         // Copy data from host to device for global memory kernel
-        cudaMemcpyToSymbol(ddata_glob, hdata, arraySize * sizeof(unsigned int));
+        cudaMemcpy(ddata_glob, hdata, arraySize * sizeof(unsigned int), cudaMemcpyHostToDevice);
+
         // Copy data from host to device for shared memory kernel
-        cudaMemcpyToSymbol(ddata_shared, hdata, arraySize * sizeof(unsigned int));
+        cudaMemcpy(ddata_shared, hdata, arraySize * sizeof(unsigned int), cudaMemcpyHostToDevice);
 
         // Execution time measurement for global memory kernel
-        auto t1_glob = std::chrono::high_resolution_clock::now();
-        parallelRadix_glob<<<1, WSIZE>>>();
+        cudaEvent_t start_glob, stop_glob;
+        cudaEventCreate(&start_glob);
+        cudaEventCreate(&stop_glob);
+        cudaEventRecord(start_glob);
+
+        parallelRadix_glob<<<1, WSIZE>>>(ddata_glob);
         cudaDeviceSynchronize();
-        auto t2_glob = std::chrono::high_resolution_clock::now();
-        auto duration_glob = std::chrono::duration_cast<std::chrono::milliseconds>(t2_glob - t1_glob).count();
-        totalTime_glob += duration_glob;
+
+        cudaEventRecord(stop_glob);
+        cudaEventSynchronize(stop_glob);
+        
+        float elapsedTime_glob;
+        cudaEventElapsedTime(&elapsedTime_glob, start_glob, stop_glob);
+        totalTime_glob += elapsedTime_glob;
 
         // Execution time measurement for shared memory kernel
-        auto t1_shared = std::chrono::high_resolution_clock::now();
-        parallelRadix_shared<<<1, WSIZE>>>();
+        cudaEvent_t start_shared, stop_shared;
+        cudaEventCreate(&start_shared);
+        cudaEventCreate(&stop_shared);
+        cudaEventRecord(start_shared);
+
+        parallelRadix_shared<<<1, WSIZE>>>(ddata_shared);
         cudaDeviceSynchronize();
-        auto t2_shared = std::chrono::high_resolution_clock::now();
-        auto duration_shared = std::chrono::duration_cast<std::chrono::milliseconds>(t2_shared - t1_shared).count();
-        totalTime_shared += duration_shared;
+
+        cudaEventRecord(stop_shared);
+        cudaEventSynchronize(stop_shared);
+
+        float elapsedTime_shared;
+        cudaEventElapsedTime(&elapsedTime_shared, start_shared, stop_shared);
+        totalTime_shared += elapsedTime_shared;
 
         // Copy data from device to host for global memory kernel
-        cudaMemcpyFromSymbol(hdata, ddata_glob, arraySize * sizeof(unsigned int));
+        cudaMemcpy(hdata, ddata_glob, arraySize * sizeof(unsigned int), cudaMemcpyDeviceToHost);
+
+        // Free device memory
+        cudaFree(ddata_glob);
+        cudaFree(ddata_shared);
     }
 
-    printf("Parallel Radix Sort using Global Memory:\n");
-    printf("Array size = %d\n", arraySize);
-    printf("Time elapsed = %g milliseconds\n", totalTime_glob);
+    std::cout << "Parallel Radix Sort using Global Memory:" << std::endl;
+    std::cout << "Array size = " << arraySize << std::endl;
+    std::cout << "Time elapsed = " << totalTime_glob << " milliseconds" << std::endl;
 
-    printf("\nParallel Radix Sort using Shared Memory:\n");
-    printf("Array size = %d\n", arraySize);
-    printf("Time elapsed = %g milliseconds\n", totalTime_shared);
+    std::cout << "\nParallel Radix Sort using Shared Memory:" << std::endl;
+    std::cout << "Array size = " << arraySize << std::endl;
+    std::cout << "Time elapsed = " << totalTime_shared << " milliseconds" << std::endl;
 
     return 0;
 }
