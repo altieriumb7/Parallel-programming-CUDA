@@ -9,9 +9,8 @@
 #include "../lib/constants.cuh"
  
 int main() {
-    const int arraySize = 10000;
-    unsigned int hdata[arraySize];
-    unsigned int *ddata_glob, *ddata_shared;
+    const int arraySize = 1000;
+    unsigned int *hdata,*ddata_glob, *ddata_shared;
 
     float totalTime_glob = 0;
     float totalTime_shared = 0;
@@ -24,10 +23,12 @@ int main() {
         for (int i = 0; i < arraySize; i++) {
             hdata[i] = rand() % range;
         }
+        const size_t size_array = arraySize * sizeof(unsigned int);
+        hdata = (unsigned int *)malloc(size_array);
+        cudaHandleError(cudaMalloc((void **)&ddata_glob, size_array));
+        cudaHandleError(cudaMalloc((void **)&ddata_shared, size_array));
 
-        cudaMalloc((void**)&ddata_glob, arraySize * sizeof(unsigned int));
-        cudaMalloc((void**)&ddata_shared, arraySize * sizeof(unsigned int));
-
+        
         // Copy data from host to device for global memory kernel
         cudaMemcpy(ddata_glob, hdata, arraySize * sizeof(unsigned int), cudaMemcpyHostToDevice);
 

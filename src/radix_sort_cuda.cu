@@ -77,8 +77,8 @@ __global__ void parallelRadix_glob(unsigned int* ddata) {
         // Do zeroes, then ones
         if (!mybit) {
             mypos = manual_popc(zeroes & ((1 << WSIZE) - 1));
-        } else { // Threads with a one bit
-            // Get my position in ping-pong buffer
+        } else 
+        { 
             mypos = manual_popc(zeroes) + manual_popc(ones & ((1 << WSIZE) - 1));
         }
 
