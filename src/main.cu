@@ -25,8 +25,8 @@ int main() {
         }
         const size_t size_array = arraySize * sizeof(unsigned int);
         hdata = (unsigned int *)malloc(size_array);
-        cudaHandleError(cudaMalloc((void **)&ddata_glob, size_array));
-        cudaHandleError(cudaMalloc((void **)&ddata_shared, size_array));
+        cudaMalloc((void **)&ddata_glob, size_array);
+        cudaMalloc((void **)&ddata_shared, size_array);
 
         
         // Copy data from host to device for global memory kernel
