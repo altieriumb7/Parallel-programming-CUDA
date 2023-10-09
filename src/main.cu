@@ -7,8 +7,7 @@
 #include "../lib/radix_sort.cuh"
 #include "../lib/utils.cuh"
 #include "../lib/constants.cuh"
-#include "../lib/utilsParallelSort.cuh"
-
+ 
 
 int main() {
     const int arraySize = 10000;
