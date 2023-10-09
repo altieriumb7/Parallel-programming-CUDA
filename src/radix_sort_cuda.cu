@@ -1,3 +1,4 @@
+#include "../lib/radix_sort.cuh"
 
 
 __global__ void parallelRadix_shared(unsigned int* ddata) {
