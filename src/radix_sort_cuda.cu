@@ -87,16 +87,23 @@ __device__ void partition_by_bit_shared(unsigned int *values, unsigned int bit, 
     unsigned int T_total = shared_mem[size - 1];
     unsigned int F_total = size - T_total;
 
+    // Calculate the position for the current element in the sorted order
+    unsigned int pos = p_i ? T_total - 1 + F_total : i - T_total;
+
+    // Use shared memory for a more efficient swap
+    __shared__ unsigned int shared_values[...]; // Define an appropriate size here
+
+    // Ensure all threads have finished their scan before proceeding
     __syncthreads();
 
-    // Update the values array based on the partitioning
-    if (p_i) {
-        values[T_total - 1 + F_total] = x_i;
-    } else {
-        values[i - T_total] = x_i;
-    }
+    // Copy values to shared memory
+    shared_values[shared_mem[i]] = x_i;
+    
+    // Ensure all threads have finished copying
     __syncthreads();
 
+    // Copy values back to the original array
+    values[i] = shared_values[pos];
 }
 
 __global__ void radix_sort_shared(unsigned int *values)
@@ -104,10 +111,16 @@ __global__ void radix_sort_shared(unsigned int *values)
     int bit;
     for (bit = 0; bit < 32; ++bit)
     {
-        partition_by_bit_shared(values, bit, nullptr);
+        // Allocate shared memory for each block
+        __shared__ unsigned int shared_mem[...]; // Define an appropriate size here
+
+        partition_by_bit_shared(values, bit, shared_mem);
         __syncthreads();
     }
 }
+
+// The rest of your code remains the same...
+
 
 __device__ int plus_scan(unsigned int *x, unsigned int *shared_mem)
 {
