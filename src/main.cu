@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <string.h> // Include for strcmp
+#include <string.h>
 #include <cuda.h>
 #include <assert.h>
 #include "../lib/merge_sort.cuh"
@@ -9,23 +9,21 @@
 #include "../lib/quick_sort.cuh"
 #include "../lib/radix_sort.cuh"
 
-
-
 #include <cuda_runtime.h>
 
-using namespace std;
-
 #define size 10000
-int main()
-{
+
+int main() {
+    // Your existing code for sorting 'arr' goes here
+
     int arr[5000];
     srand(time(NULL));
-    for (int i = 0; i<5000; i++)
-       {
-         arr[i] = rand ()%10000;
-       }
-    int n = sizeof( arr ) / sizeof( *arr );
-    quickSortIterative( arr, 0, n - 1 );
+    for (int i = 0; i < 5000; i++) {
+        arr[i] = rand() % 10000;
+    }
+    int n = sizeof(arr) / sizeof(*arr);
+    quickSortIterative(arr, 0, n - 1);
+
     int sorted = 1; // Assume it's sorted
     for (int i = 1; i < n; i++) {
         if (arr[i - 1] > arr[i]) {
@@ -35,25 +33,28 @@ int main()
     }
 
     if (sorted) {
-        printf("Array is sorted.\n");
+        printf("Array 'arr' is sorted.\n");
     } else {
-        printf("Array is not sorted.\n");
+        printf("Array 'arr' is not sorted.\n");
     }
 
-    unsigned int a[5000];
-    
+    // Add the provided code for radix sort here
+
+    unsigned int a[1000];
+    int size = 1000;
     srand(time(NULL));
-    for (int i = 0; i < 5000; i++)
-    {
-    a[i] = rand ()%10000;
+    for (int i = 0; i < 1000; i++) {
+        a[i] = rand() % 1000;
     }
+
     unsigned int *dev_a;
     cudaMalloc(&dev_a, size * sizeof(unsigned int));
-    cudaMemcpy( dev_a, a, 5000 * sizeof(unsigned int), cudaMemcpyHostToDevice);
-    radix_sort<<<1,5000>>>(dev_a);
-    cudaMemcpy( a, dev_a, 5000 * sizeof(unsigned int), cudaMemcpyDeviceToHost );
-    sorted = 1;
-    for (int i = 1; i < n; i++) {
+    cudaMemcpy(dev_a, a, size * sizeof(unsigned int), cudaMemcpyHostToDevice);
+    radix_sort<<<1, size>>>(dev_a);
+    cudaMemcpy(a, dev_a, size * sizeof(unsigned int), cudaMemcpyDeviceToHost);
+
+    sorted = 1; // Assume it's sorted
+    for (int i = 1; i < size; i++) {
         if (a[i - 1] > a[i]) {
             sorted = 0; // Array is not sorted
             break;
@@ -61,9 +62,15 @@ int main()
     }
 
     if (sorted) {
-        printf("Array is sorted.\n");
+        printf("Array 'a' is sorted.\n");
     } else {
-        printf("Array is not sorted.\n");
+        printf("Array 'a' is not sorted.\n");
     }
+
+    for (int i = 0; i < 1000; i++) {
+        printf("%u ", a[i]);
+    }
+    printf("\n");
+
     return 0;
 }
