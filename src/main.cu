@@ -67,10 +67,7 @@ int main() {
         printf("Array 'a' is not sorted.\n");
     }
 
-    for (int i = 0; i < 1000; i++) {
-        printf("%u ", a[i]);
-    }
-    printf("\n");
+    
 
     // Your provided mergesort code with checks
 
@@ -98,11 +95,7 @@ int main() {
     mergesort(data, size_data, threadsPerBlock, blocksPerGrid);
 
     // Print sorted data
-    printf("Sorted data: ");
-    for (int i = 0; i < size_data; i++) {
-        printf("%ld ", data[i]);
-    }
-    printf("\n");
+    
 
     // Check if the array is sorted
     if (isSorted(data, size_data)) {
