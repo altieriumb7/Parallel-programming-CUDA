@@ -7,7 +7,6 @@
     for ( i = 0; i < n; ++i )
         printf( "%d ", arr[i] );
 }
-__device__ int d_size;
 
 __global__ void partition (int *arr, int *arr_l, int *arr_h, int n)
 {
