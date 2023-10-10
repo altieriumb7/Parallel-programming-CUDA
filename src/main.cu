@@ -9,8 +9,6 @@
 #include "../lib/quick_sort.cuh"
 #include "../lib/radix_sort.cuh"
 #include "../lib/utilsParallelSort.cuh"
-
-
 #include <cuda_runtime.h>
 
 #define size 10000
@@ -74,47 +72,9 @@ int main() {
 
     // Your provided mergesort code with checks
     //-------------------------------------------------------------------------------------------------------------------------
+    // Your existing code for sorting 'arr' goes here
     
-    unsigned int host_array[ARRAY_SIZE];
-    srand(time(NULL));
-    for (int i = 0; i < ARRAY_SIZE; i++) {
-        host_array[i] = rand() % 1000;
-    }
-
-    // Allocate and copy data to the GPU
-    unsigned int *device_array;
-    cudaMalloc(&device_array, ARRAY_SIZE * sizeof(unsigned int));
-    cudaMemcpy(device_array, host_array, ARRAY_SIZE * sizeof(unsigned int), cudaMemcpyHostToDevice);
-
-    // Sort the data using shared memory radix sort
-    radix_sort_shared<<<1, ARRAY_SIZE>>>(device_array);
-
-    // Copy the sorted data back to the host
-    cudaMemcpy(host_array, device_array, ARRAY_SIZE * sizeof(unsigned int), cudaMemcpyDeviceToHost);
-
-    // Verify if the array is sorted
-    bool sorted_2 = true;
-    for (int i = 1; i < ARRAY_SIZE; i++) {
-        if (host_array[i - 1] > host_array[i]) {
-            sorted_2 = false;
-            break;
-        }
-    }
-
-    if (sorted_2) {
-        printf("Array is sorted.\n");
-    } else {
-        printf("Array is not sorted.\n");
-    }
-
-    // Cleanup
-    cudaFree(device_array);
-
-   
-
-    
-    //-------------------------------------------------------------------------------------------------------------------------
-    
+    // ... (your existing code)
 
     // Create an array of numbers (you can replace this with your input)
     long data[5000];
@@ -128,40 +88,47 @@ int main() {
     // Sort the data using mergesort
     mergesort(data, size_data, sort_config.threads_per_block, sort_config.total_blocks);
 
-    
-
     // Check if the array is sorted
     if (isSorted(data, size_data)) {
         printf("Array is sorted.\n");
     } else {
         printf("Array is not sorted.\n");
     }
-    //
-        // Your provided mergesort code with checks
+
+    // Your provided mergesort code with checks
+    //-------------------------------------------------------------------------------------------------------------------------
     
-
-    long data2[5000];
-    
-
-    // Create an array of numbers (you can replace this with your input)
-    size_data = sizeof(data2) / sizeof(data2[0]);
-
-    // Print unsorted data
-    for (int i = 0; i < 5000; i++) {
-        data2[i] = rand() % 100000;
+    // Testing the shared radix sort
+    unsigned int host_array[1000];
+    srand(time(NULL));
+    for (int i = 0; i < 1000; i++) {
+        host_array[i] = rand() % 1000;
     }
 
-    // Sort the data using mergesort
-    mergesort_shared(data2, size_data, sort_config.threads_per_block, sort_config.total_blocks);
+    unsigned int *device_array;
+    cudaMalloc(&device_array, 1000 * sizeof(unsigned int));
+    cudaMemcpy(device_array, host_array, 1000 * sizeof(unsigned int), cudaMemcpyHostToDevice);
 
-    
+    radix_sort_shared<<<1, 1000>>>(device_array);
 
-    // Check if the array is sorted
-    if (isSorted(data2, size_data)) {
-        printf("Array is sorted.\n");
+    cudaMemcpy(host_array, device_array, 1000 * sizeof(unsigned int), cudaMemcpyDeviceToHost);
+
+    bool sorted_shared = true;
+    for (int i = 1; i < 1000; i++) {
+        if (host_array[i - 1] > host_array[i]) {
+            sorted_shared = false;
+            break;
+        }
+    }
+
+    if (sorted_shared) {
+        printf("Array 'host_array' is sorted using shared radix sort.\n");
     } else {
-        printf("Array is not sorted.\n");
+        printf("Array 'host_array' is not sorted using shared radix sort.\n");
     }
-    
 
+    // Cleanup
+    cudaFree(device_array);
+
+    return 0;
 }
