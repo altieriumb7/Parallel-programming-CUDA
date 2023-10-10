@@ -9,7 +9,10 @@
 #include "../lib/constants.cuh"
  int main() {
     const int arraySize = WSIZE * LOOPS;
-    unsigned int hdata[arraySize];
+    unsigned int hdata[arraySize],*ddata;
+    const size_t size_array = arraySize* sizeof(unsigned int);
+    double t_start = 0, t_stop = 0,
+    cudaMalloc((void **)&ddata, size_array);
     float totalTime = 0;
 
     srand(time(NULL));
@@ -27,18 +30,17 @@
 
         // Execution time measurement: start the clock
         struct timeval t1, t2;
-        gettimeofday(&t1, NULL);
+        t_start = get_time();
 
-        parallelRadix<<<1, WSIZE>>>();
+        parallelRadix<<<1, WSIZE>>>(ddata);
         cudaDeviceSynchronize();
 
         // Execution time measurement: stop the clock
-        gettimeofday(&t2, NULL);
+        t_stop = get_time();
 
         // Calculate the execution time
-        long long duration = (t2.tv_sec - t1.tv_sec) * 1000000LL + (t2.tv_usec - t1.tv_usec);
-        duration /= 1000; // Convert to milliseconds
-        // Summation of each loop's execution time
+        long long duration = t_start-t_stop
+        
         totalTime += duration;
 
         // Copy data from device to host
