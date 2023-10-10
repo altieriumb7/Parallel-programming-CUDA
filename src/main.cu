@@ -7,7 +7,7 @@
 #include "../lib/radix_sort.cuh"
 #include "../lib/utils.cuh"
 #include "../lib/constants.cuh"
- int main() {
+int main() {
     const int arraySize = WSIZE * LOOPS;
     unsigned int hdata[arraySize],*ddata;
     const size_t size_array = arraySize* sizeof(unsigned int);
