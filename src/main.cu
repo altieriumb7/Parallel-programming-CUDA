@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
     cput = ((double)(end - start)) / 1000;
     printf("\nRunning time = %g s\n", cput);
 
-    if (is_sorted(data, N)) {
+    if (is_sorted(dev_data, N)) {
         printf("Array sorted properly.\n");
     } else {
         printf("Array sorted improperly.\n");
