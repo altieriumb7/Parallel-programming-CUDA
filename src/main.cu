@@ -93,12 +93,7 @@ int main() {
     // Sort the data using mergesort
     mergesort(data, size_data, threadsPerBlock, blocksPerGrid);
 
-    // Print sorted data
-    printf("Sorted data: ");
-    for (int i = 0; i < size_data; i++) {
-        printf("%ld ", data[i]);
-    }
-    printf("\n");
+    
 
     // Check if the array is sorted
     if (isSorted(data, size_data)) {
@@ -137,5 +132,10 @@ int main() {
     } else {
         printf("Array is not sorted.\n");
     }
+    printf("Sorted data: ");
+    for (int i = 0; i < size_data; i++) {
+        printf("%ld ", data2[i]);
+    }
+    printf("\n");
 
 }
