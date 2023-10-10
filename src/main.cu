@@ -6,7 +6,7 @@
 #include <assert.h>
 #include "../lib/merge_sort.cuh"
 #include "../lib/utils.cuh"
-#include "../lib/utilsParallelSort.cuh"
+#include "../lib/quick_sort.cuh"
 
 
 
@@ -15,45 +15,16 @@
 using namespace std;
 
 #define size 10000
-
-int main(int argc, char** argv) 
+int main()
 {
-    clock_t start, end;
-    double cput;
-
-    start = clock();
-
-    dim3 threadsPerBlock;
-    dim3 blocksPerGrid;
-
-    threadsPerBlock.x = 32;
-    threadsPerBlock.y = 1;
-    threadsPerBlock.z = 1;
-
-    blocksPerGrid.x = 8;
-    blocksPerGrid.y = 1;
-    blocksPerGrid.z = 1;
-
-    int inputLength;
-    float* data = nullptr;
-
-    // Initialize data here or load it from a file
-
-    mergesort(data, threadsPerBlock, blocksPerGrid,size);
-
-    // Print the sorted array or save it to a file
-
-    
-
-    end = clock();
-    cput = ((double)(end - start)) / CLOCKS_PER_SEC;
-    printf("Execution time: %lf\n", cput);
-    if (is_sorted(data,size)){
-        printf("array sorted");
-    }else{
-        printf("array not sorted");
-    }
-
+    int arr[5000];
+    srand(time(NULL));
+    for (int i = 0; i<5000; i++)
+       {
+         arr[i] = rand ()%10000;
+       }
+    int n = sizeof( arr ) / sizeof( *arr );
+    quickSortIterative( arr, 0, n - 1 );
+    printArr( arr, n );
     return 0;
 }
-
