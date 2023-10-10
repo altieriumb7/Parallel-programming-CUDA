@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <cuda_runtime.h>
 #include <time.h>
+#include "../lib/constants.cuh"
 
 // Partition an array of unsigned integers by a specific bit
 __device__ void partition_by_bit(unsigned int *values, unsigned int bit);

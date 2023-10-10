@@ -5,6 +5,8 @@
 #include <string.h>
 #include <math.h>
 #include <cuda_runtime.h>
+#include "../lib/constants.cuh"
+
 
 // GPU helper function for bottom-up merge
 __device__ void gpu_bottomUpMerge(long* source, long* dest, long start, long middle, long end);
