@@ -8,48 +8,49 @@
 #include "../lib/utils.cuh"
 #include "../lib/utilsParallelSort.cuh"
 
-bool verbose;
 
-int main(int argc, char** argv) {
-    bool write_output = false;
-    double start = 0, end = 0;
+#include <iostream>
+#include <stdlib.h>
+#include "mergesort.cuh"
+#include <cuda_runtime.h>
+
+using namespace std;
+
+#define size 10000
+
+int main(int argc, char** argv) 
+{
+    clock_t start, end;
     double cput;
-    unsigned short *data, *dev_data;
-    unsigned long long N = 512;
 
-    for (int i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "-w") == 0) {
-            write_output = true;
-        } else {
-            N = atoi(argv[i]);
-        }
-    }
+    start = clock();
 
-    const size_t size_array = N * sizeof(unsigned short);
-    data = (unsigned short *)malloc(size_array);
-    cudaMalloc((void **)&dev_data, size_array);
-    init_array(data, N);
-    ParallelSortConfig sort_config = determine_config(N);
+    dim3 threadsPerBlock;
+    dim3 blocksPerGrid;
 
-    sort_config.blockSize = dim3(sort_config.threads_per_block);
-    sort_config.gridSize = dim3(sort_config.total_blocks);
-    cudaMemcpy(dev_data, data, size_array, cudaMemcpyHostToDevice);
+    threadsPerBlock.x = 32;
+    threadsPerBlock.y = 1;
+    threadsPerBlock.z = 1;
 
-    start = get_time();
+    blocksPerGrid.x = 8;
+    blocksPerGrid.y = 1;
+    blocksPerGrid.z = 1;
 
-    mergesort(data, sort_config.blockSize, sort_config.gridSize,N);
-    end = get_time();
-    cudaPeekAtLastError();
-    cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost);
+    int inputLength;
+    float* data = nullptr;
 
-    cput = ((double)(end - start)) / 1000;
-    printf("\nRunning time = %g s\n", cput);
+    // Initialize data here or load it from a file
 
-    if (is_sorted(dev_data, N)) {
-        printf("Array sorted properly.\n");
-    } else {
-        printf("Array sorted improperly.\n");
-    }
+    mergesort(data, threadsPerBlock, blocksPerGrid);
+
+    // Print the sorted array or save it to a file
+
+    cout << "\nInput Length : " << size << endl;
+
+    end = clock();
+    cput = ((double)(end - start)) / CLOCKS_PER_SEC;
+    cout << "\nRunning time = " << cput << " s" << endl;
 
     return 0;
 }
+
