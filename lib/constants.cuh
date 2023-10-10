@@ -10,7 +10,7 @@
 #define PARTITION_SIZE 4096
 #define MIN_VALUE 0
 #define MAX_VALUE 65535
-#define LOOPS 5
+#define LOOPS 1
 #define UPPER_BIT 10
 #define LOWER_BIT 0
 
