@@ -9,6 +9,7 @@
 #include "../lib/quick_sort.cuh"
 #include "../lib/radix_sort.cuh"
 
+
 #include <cuda_runtime.h>
 
 #define size 10000
