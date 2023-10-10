@@ -21,5 +21,6 @@ __device__ int plus_scan(unsigned int *x);
 
 
 __global__ void radix_sort_shared(unsigned int *values);
-
+__device__ int plus_scan_shared(unsigned int *x);
+__device__ void partition_by_bit_shared(unsigned int *values, unsigned int bit);
 
