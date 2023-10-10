@@ -14,7 +14,7 @@ int main() {
     unsigned int *hdata,*ddata;
     float totalTime = 0;
     const size_t size_array = arraySize * sizeof(unsigned int);
-    hdata = (unsigned short *)malloc(size_array);
+    hdata = (unsigned int *)malloc(size_array);
     cudaMalloc((void **)&ddata, size_array);
 
     for (int lcount = 0; lcount < LOOPS; lcount++) {
