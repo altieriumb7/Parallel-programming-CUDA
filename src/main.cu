@@ -6,7 +6,7 @@
 #include <assert.h>
 #include "../lib/radix_sort.cuh"
 #include "../lib/utils.cuh"
-#include "../lib/constants.cuh"int main() {
+int main() {
     const int arraySize = WSIZE * LOOPS;
     unsigned int hdata[arraySize];
     float totalTime = 0;
