@@ -5,6 +5,8 @@
 
 // Replace this with your custom function to calculate population count (number of set bits) in an unsigned int.
 // For example, you can use a lookup table or a custom algorithm.
+unsigned int ddata[WSIZE];
+
 __device__ unsigned int custom_popc(unsigned int value) {
     // Implement your custom population count function here.
     // You can use a lookup table or other efficient methods.

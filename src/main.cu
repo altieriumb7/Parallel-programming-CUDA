@@ -6,16 +6,12 @@
 #include <assert.h>
 #include "../lib/radix_sort.cuh"
 #include "../lib/utils.cuh"
-#include "../lib/constants.cuh"
-int main() {
+#include "../lib/constants.cuh"int main() {
     const int arraySize = WSIZE * LOOPS;
-    //unsigned int hdata[arraySize],ddata[arraySize];
-    double t_start = 0, t_stop = 0;
-    unsigned int *hdata,*ddata;
+    unsigned int hdata[arraySize];
     float totalTime = 0;
-    const size_t size_array = arraySize * sizeof(unsigned int);
-    hdata = (unsigned int *)malloc(size_array);
-    cudaMalloc((void **)&ddata, size_array);
+
+    srand(time(NULL));
 
     for (int lcount = 0; lcount < LOOPS; lcount++) {
         // Array elements have values in the range of 1024
@@ -26,24 +22,26 @@ int main() {
             hdata[i] = rand() % range;
         }
 
-        cudaMemcpy(ddata, hdata, size_array, cudaMemcpyHostToDevice);
+        cudaMemcpyToSymbol(ddata, hdata, arraySize * sizeof(unsigned int));
 
         // Execution time measurement: start the clock
-        t_start = get_time();
+        struct timeval t1, t2;
+        gettimeofday(&t1, NULL);
 
-        parallelRadix<<<1, WSIZE>>>(ddata);
+        parallelRadix<<<1, WSIZE>>>();
         cudaDeviceSynchronize();
 
         // Execution time measurement: stop the clock
-        t_stop = get_time();
+        gettimeofday(&t2, NULL);
 
         // Calculate the execution time
-        long long duration = t_start-t_stop;
-        
+        long long duration = (t2.tv_sec - t1.tv_sec) * 1000000LL + (t2.tv_usec - t1.tv_usec);
+        duration /= 1000; // Convert to milliseconds
+        // Summation of each loop's execution time
         totalTime += duration;
 
         // Copy data from device to host
-        cudaMemcpy(ddata, hdata, size_array, cudaMemcpyDeviceToHost);
+        cudaMemcpyFromSymbol(hdata, ddata, arraySize * sizeof(unsigned int));
     }
 
     if (isSorted(hdata, arraySize)) {
@@ -58,8 +56,3 @@ int main() {
 
     return 0;
 }
-
-
-
-
-
