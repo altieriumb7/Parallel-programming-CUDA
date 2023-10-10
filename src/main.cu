@@ -39,5 +39,30 @@ int main()
         printf("Array is not sorted.\n");
     }
 
+    unsigned int a[5000];
+    int size = 5000;
+    srand(time(NULL));
+    for (int i = 0; i < 5000; i++)
+    {
+    a[i] = rand ()%5000;
+    }
+    unsigned int *dev_a;
+    cudaMalloc(&dev_a, size * sizeof(unsigned int));
+    cudaMemcpy( dev_a, a, size * sizeof(unsigned int), cudaMemcpyHostToDevice);
+    radix_sort<<<1,size>>>(dev_a);
+    cudaMemcpy( a, dev_a, size * sizeof(unsigned int), cudaMemcpyDeviceToHost );
+    int sorted = 1,n=5000; // Assume it's sorted
+    for (int i = 1; i < n; i++) {
+        if (a[i - 1] > a[i]) {
+            sorted = 0; // Array is not sorted
+            break;
+        }
+    }
+
+    if (sorted) {
+        printf("Array is sorted.\n");
+    } else {
+        printf("Array is not sorted.\n");
+    }
     return 0;
 }
