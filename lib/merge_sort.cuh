@@ -7,6 +7,7 @@
 #include <cuda_runtime.h>
 #include "../lib/constants.cuh"
 
-void mergesort(float, dim3, dim3);
-__global__ void gpu_mergesort(float, float, long, long, dim3, dim3);
-__device__ void gpu_bottomUpMerge(float, float, long, long, long);
+void mergesort(unsigned short * data, dim3 threadsPerBlock, dim3 blocksPerGrid);
+__device__ unsigned int getIdx(dim3 *threads, dim3 *blocks);
+__global__ void gpu_mergesort(unsigned short *source, unsigned short *dest,unsigned long long width, unsigned long long slices, dim3 *threads, dim3 *blocks);
+__device__ void gpu_bottomUpMerge(unsigned short *source, unsigned short *dest, unsigned long long start, unsigned long long middle, unsigned long long end);
