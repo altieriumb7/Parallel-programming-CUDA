@@ -75,16 +75,16 @@ int main() {
     // Your provided mergesort code with checks
     //-------------------------------------------------------------------------------------------------------------------------
     unsigned int b[1000];
-    
-    srand(time(NULL));
     for (int i = 0; i < 1000; i++) {
         b[i] = rand() % 1000;
     }
+
     unsigned int *dev_b;
     cudaMalloc(&dev_b, size_a * sizeof(unsigned int));
-    cudaMemcpy(dev_b, a, size_a * sizeof(unsigned int), cudaMemcpyHostToDevice);
+    cudaMemcpy(dev_b, b, size_a * sizeof(unsigned int), cudaMemcpyHostToDevice);
     radix_sort_shared<<<1, size_a>>>(dev_b);
     cudaMemcpy(b, dev_b, size_a * sizeof(unsigned int), cudaMemcpyDeviceToHost);
+
     sorted = 1; // Assume it's sorted
     for (int i = 1; i < size_a; i++) {
         if (b[i - 1] > b[i]) {
@@ -92,6 +92,7 @@ int main() {
             break;
         }
     }
+
     if (sorted) {
         printf("Array 'b' is sorted.\n");
     } else {
