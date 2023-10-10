@@ -75,6 +75,43 @@ int main() {
     // Your provided mergesort code with checks
     //-------------------------------------------------------------------------------------------------------------------------
     
+    unsigned int host_array[ARRAY_SIZE];
+    srand(time(NULL));
+    for (int i = 0; i < ARRAY_SIZE; i++) {
+        host_array[i] = rand() % 1000;
+    }
+
+    // Allocate and copy data to the GPU
+    unsigned int *device_array;
+    cudaMalloc(&device_array, ARRAY_SIZE * sizeof(unsigned int));
+    cudaMemcpy(device_array, host_array, ARRAY_SIZE * sizeof(unsigned int), cudaMemcpyHostToDevice);
+
+    // Sort the data using shared memory radix sort
+    radix_sort_shared<<<1, ARRAY_SIZE>>>(device_array);
+
+    // Copy the sorted data back to the host
+    cudaMemcpy(host_array, device_array, ARRAY_SIZE * sizeof(unsigned int), cudaMemcpyDeviceToHost);
+
+    // Verify if the array is sorted
+    bool sorted = true;
+    for (int i = 1; i < ARRAY_SIZE; i++) {
+        if (host_array[i - 1] > host_array[i]) {
+            sorted = false;
+            break;
+        }
+    }
+
+    if (sorted) {
+        printf("Array is sorted.\n");
+    } else {
+        printf("Array is not sorted.\n");
+    }
+
+    // Cleanup
+    cudaFree(device_array);
+
+   
+
     
     //-------------------------------------------------------------------------------------------------------------------------
     
