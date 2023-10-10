@@ -8,6 +8,7 @@
 #include "../lib/utils.cuh"
 #include "../lib/quick_sort.cuh"
 #include "../lib/radix_sort.cuh"
+#include "../lib/utilsParallelSort.cuh"
 
 
 #include <cuda_runtime.h>
@@ -103,7 +104,11 @@ int main() {
     }
     //
         // Your provided mergesort code with checks
-    
+    sort_config = determine_config(5000);
+
+    sort_config.blockSize = dim3(sort_config.threads_per_block);
+    sort_config.gridSize = dim3(sort_config.total_blocks);
+
     long data2[5000];
     threadsPerBlock.x = 32;
     threadsPerBlock.y = 1;
@@ -122,7 +127,7 @@ int main() {
     }
 
     // Sort the data using mergesort
-    mergesort_shared(data2, size_data, threadsPerBlock, blocksPerGrid);
+    mergesort_shared(data2, size_data, sort_config.threads_per_block, sort_config.total_blocks);
 
     
 
