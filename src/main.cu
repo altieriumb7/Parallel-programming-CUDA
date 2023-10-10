@@ -10,12 +10,12 @@
 int main() {
     const int arraySize = WSIZE * LOOPS;
     //unsigned int hdata[arraySize],ddata[arraySize];
-    double t_start = 0, t_stop = 0,
+    double t_start = 0, t_stop = 0;
     unsigned int *hdata,*ddata;
     float totalTime = 0;
     const size_t size_array = arraySize * sizeof(unsigned int);
     hdata = (unsigned short *)malloc(size_array);
-    cudaHandleError(cudaMalloc((void **)&ddata, size_array));
+    cudaMalloc((void **)&ddata, size_array);
 
     for (int lcount = 0; lcount < LOOPS; lcount++) {
         // Array elements have values in the range of 1024
@@ -43,7 +43,7 @@ int main() {
         totalTime += duration;
 
         // Copy data from device to host
-        cudaMemcpy(ddata, hdata, size_array, cudaMemcpyDeviceToHost)
+        cudaMemcpy(ddata, hdata, size_array, cudaMemcpyDeviceToHost);
     }
 
     if (isSorted(hdata, arraySize)) {
