@@ -143,7 +143,7 @@ int main() {
     cudaMalloc(&device_array2, 1000 * sizeof(int)); // Change the type here
     cudaMemcpy(device_array2, host_array2, 1000 * sizeof(int), cudaMemcpyHostToDevice);
     const int blck_x=sort_config.blockSize.x;
-    quickSortIterative_shared(device_array2, 0, 1000 - 1, blck_x); // Pass int* here
+    quickSortIterative_shared(device_array2, 0, 1000 - 1, 1000); // Pass int* here
 
 
     cudaMemcpy(host_array2, device_array2, 1000 * sizeof(unsigned int), cudaMemcpyDeviceToHost);
