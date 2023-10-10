@@ -131,7 +131,7 @@ int main() {
 
     // Cleanup
     cudaFree(device_array);
-
+    /*
     //-----------------------------------------------------------------------------------------------------------------------------------------------------
     // Testing the shared radix sort
     int host_array2[1000];
@@ -165,6 +165,6 @@ int main() {
 
     // Cleanup
     cudaFree(device_array2);
-
+    */
     return 0;
 }
