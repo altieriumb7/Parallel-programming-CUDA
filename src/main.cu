@@ -1,13 +1,13 @@
-#include <iostream>
+#include <stdio.h>
 #include <stdlib.h>
-#include "helper_cuda.h"
-#include <sys/time.h>
-#include "wb.h"
-using namespace std;
+#include <stdbool.h>
+#include <math.h>
+#include <cuda.h>
+#include <assert.h>
+#include "../lib/radix_sort.cuh"
+#include "../lib/merge_sort.cuh"
+#include "../lib/utils.cuh"
 #include "../lib/utilsParallelSort.cuh"
-
-
-
 
 bool verbose;
 int main(int argc, char** argv) 
