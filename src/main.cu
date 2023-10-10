@@ -115,7 +115,7 @@ int main() {
 
     bool sorted_shared = true;
     for (int i = 1; i < 1000; i++) {
-        print("%lu ",host_array[i]);
+        printf("%lu ",host_array[i]);
 
         if (host_array[i - 1] > host_array[i]) {
             sorted_shared = false;
