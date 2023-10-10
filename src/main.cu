@@ -73,17 +73,31 @@ int main() {
     }
 
     // Your provided mergesort code with checks
-
-    dim3 threadsPerBlock;
-    dim3 blocksPerGrid;
-
-    threadsPerBlock.x = 32;
-    threadsPerBlock.y = 1;
-    threadsPerBlock.z = 1;
-
-    blocksPerGrid.x = 8;
-    blocksPerGrid.y = 1;
-    blocksPerGrid.z = 1;
+    //-------------------------------------------------------------------------------------------------------------------------
+    unsigned int b[1000];
+    srand(time(NULL));
+    for (int i = 0; i < 1000; i++) {
+        b[i] = rand() % 1000;
+    }
+    unsigned int *dev_b;
+    cudaMalloc(&dev_b, size_a * sizeof(unsigned int));
+    cudaMemcpy(dev_b, a, size_a * sizeof(unsigned int), cudaMemcpyHostToDevice);
+    radix_sort_shared<<<1, size_a>>>(dev_b);
+    cudaMemcpy(b, dev_b, size_a * sizeof(unsigned int), cudaMemcpyDeviceToHost);
+    sorted = 1; // Assume it's sorted
+    for (int i = 1; i < size_a; i++) {
+        if (b[i - 1] > b[i]) {
+            sorted = 0; // Array is not sorted
+            break;
+        }
+    }
+    if (sorted) {
+        printf("Array 'b' is sorted.\n");
+    } else {
+        printf("Array 'b' is not sorted.\n");
+    }
+    //-------------------------------------------------------------------------------------------------------------------------
+    
 
     // Create an array of numbers (you can replace this with your input)
     long data[5000];
