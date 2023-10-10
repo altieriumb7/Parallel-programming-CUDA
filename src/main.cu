@@ -136,13 +136,14 @@ int main() {
     // Testing the shared radix sort
     unsigned int host_array2[1000];
     for (int i = 0; i < 1000; i++) {
-        host_array2[i] = rand() % 1000;
+        host_array2[i] = rand() % 100000;
     }
 
     int *device_array2;
     cudaMalloc(&device_array2, 1000 * sizeof(int)); // Change the type here
     cudaMemcpy(device_array2, host_array2, 1000 * sizeof(int), cudaMemcpyHostToDevice);
-    quickSortIterative_shared(device_array2, 0, 1000 - 1, sort_config.blockSize.x); // Pass int* here
+    const int blck_x=sort_config.blockSize.x;
+    quickSortIterative_shared(device_array2, 0, 1000 - 1, blck_x); // Pass int* here
 
 
     cudaMemcpy(host_array2, device_array2, 1000 * sizeof(unsigned int), cudaMemcpyDeviceToHost);
@@ -157,9 +158,9 @@ int main() {
     }
 
     if (sorted_shared) {
-        printf("Array 'host_array2' is sorted using shared radix sort.\n");
+        printf("Array 'host_array2' is sorted using shared quick sort.\n");
     } else {
-        printf("Array 'host_array2' is not sorted using shared radix sort.\n");
+        printf("Array 'host_array2' is not sorted using shared quick sort.\n");
     }
 
     // Cleanup
