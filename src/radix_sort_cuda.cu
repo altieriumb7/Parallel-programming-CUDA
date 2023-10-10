@@ -58,7 +58,7 @@ __device__ void partition_by_bit(unsigned int *values, unsigned int bit)
 
 
 
-__device__ void partition_by_bit_shared(unsigned int *values, unsigned int bit, unsigned int *shared_mem,unsigned long long N)
+__device__ void partition_by_bit_shared(unsigned int *values, unsigned int bit, unsigned int *shared_mem,const unsigned long long N)
 {
     unsigned int i = threadIdx.x;
     unsigned int size = blockDim.x;
@@ -106,7 +106,7 @@ __device__ void partition_by_bit_shared(unsigned int *values, unsigned int bit, 
     values[i] = shared_values[pos];
 }
 
-__global__ void radix_sort_shared(unsigned int *values,unsigned long long N)
+__global__ void radix_sort_shared(unsigned int *values,const unsigned long long N)
 {
     int bit;
     for (bit = 0; bit < 32; ++bit)
