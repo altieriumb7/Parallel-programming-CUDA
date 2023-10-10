@@ -6,6 +6,5 @@
 #include <math.h>
 #include <cuda_runtime.h>
 #include "../lib/constants.cuh"
-
-__global__ void parallelRadix_shared(unsigned int* ddata);
-__global__ void parallelRadix_glob(unsigned int* ddata);
+__global__ void parallelRadix();
+__device__ unsigned int custom_popc(unsigned int value);

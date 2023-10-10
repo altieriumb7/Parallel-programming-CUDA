@@ -1,19 +1,27 @@
-#include "../lib/radix_sort.cuh"
+#define WSIZE 32
+#define LOOPS 1
+#define UPPER_BIT 10
+#define LOWER_BIT 0
 
-// Manually implement population count (popc) function
-__device__ unsigned int manual_popc(unsigned int x) {
+// Replace this with your custom function to calculate population count (number of set bits) in an unsigned int.
+// For example, you can use a lookup table or a custom algorithm.
+__device__ unsigned int custom_popc(unsigned int value) {
+    // Implement your custom population count function here.
+    // You can use a lookup table or other efficient methods.
+    // For demonstration, we use a simple loop:
     unsigned int count = 0;
-    while (x) {
-        count += (x & 1);
-        x >>= 1;
+    for (int i = 0; i < 32; i++) {
+        count += (value >> i) & 1;
     }
     return count;
 }
 
-__global__ void parallelRadix_shared(unsigned int* ddata) {
+//__device__ unsigned int ddata[WSIZE];
+
+__global__ void parallelRadix(unsigned int *ddata) {
     __shared__ volatile unsigned int sdata[WSIZE * 2];
 
-    // Load data from global memory into shared memory
+    // Load from global into shared variable
     sdata[threadIdx.x] = ddata[threadIdx.x];
 
     unsigned int bitmask = 1 << LOWER_BIT;
@@ -25,66 +33,34 @@ __global__ void parallelRadix_shared(unsigned int* ddata) {
         unsigned int mydata = sdata[((WSIZE - 1) - threadIdx.x) + offset];
         unsigned int mybit = mydata & bitmask;
 
-        // Get population of ones and zeroes manually
+        // Get population of ones and zeroes
         unsigned int ones = 0;
         unsigned int zeroes = 0;
 
+        // Calculate ones and zeroes manually (replace with custom function if needed)
         for (int j = 0; j < WSIZE; j++) {
             unsigned int bit = (mydata >> j) & 1;
             ones += (bit == 1);
             zeroes += (bit == 0);
         }
 
-        offset ^= WSIZE;
-
-        // Determine my position in ping-pong buffer
-        if (!mybit) {
-            mypos = (zeroes & thrmask);
-        } else { // Threads with a one bit
-            mypos = ((zeroes + ones) & thrmask);
-        }
-
-        // Move data to buffer
-        sdata[mypos - 1 + offset] = mydata;
-
-        // Repeat for the next bit
-        bitmask <<= 1;
-    }
-
-    // Put results back into global memory
-    ddata[threadIdx.x] = sdata[threadIdx.x + offset];
-}
-
-__global__ void parallelRadix_glob(unsigned int* ddata) {
-    unsigned int bitmask = 1 << LOWER_BIT;
-    unsigned int offset = 0;
-    unsigned int mypos;
-
-    for (int i = LOWER_BIT; i <= UPPER_BIT; i++) {
-        unsigned int mydata = ddata[threadIdx.x + offset];
-        unsigned int mybit = mydata & bitmask;
-
-        // Get population of ones and zeroes manually
-        unsigned int ones = 0, zeroes = 0;
-        for (int j = 0; j < WSIZE; j++) {
-            unsigned int bit = (mydata >> j) & 1;
-            ones += (bit & mybit);
-            zeroes += (bit & ~mybit);
-        }
-
         offset ^= WSIZE; // Switch ping-pong buffers
 
         // Do zeroes, then ones
         if (!mybit) {
-            mypos = manual_popc(zeroes & ((1 << WSIZE) - 1));
-        } else 
-        { 
-            mypos = manual_popc(zeroes) + manual_popc(ones & ((1 << WSIZE) - 1));
+            // Calculate mypos using the custom population count function
+            mypos = custom_popc(zeroes & thrmask);
+        } else { // Threads with a one bit
+            // Calculate mypos using the custom population count function
+            mypos = custom_popc(zeroes) + custom_popc(ones & thrmask);
         }
 
-        ddata[threadIdx.x + offset + mypos - 1] = mydata;
-
+        // Move to buffer
+        sdata[mypos - 1 + offset] = mydata;
         // Repeat for the next bit
         bitmask <<= 1;
     }
+
+    // Put results to global
+    ddata[threadIdx.x] = sdata[threadIdx.x + offset];
 }
