@@ -67,8 +67,6 @@ int main() {
         printf("Array 'a' is not sorted.\n");
     }
 
-    
-
     // Your provided mergesort code with checks
 
     dim3 threadsPerBlock;
@@ -95,7 +93,11 @@ int main() {
     mergesort(data, size_data, threadsPerBlock, blocksPerGrid);
 
     // Print sorted data
-    
+    printf("Sorted data: ");
+    for (int i = 0; i < size_data; i++) {
+        printf("%ld ", data[i]);
+    }
+    printf("\n");
 
     // Check if the array is sorted
     if (isSorted(data, size_data)) {

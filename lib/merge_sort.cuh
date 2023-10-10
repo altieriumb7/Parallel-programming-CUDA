@@ -8,7 +8,7 @@
 
 // GPU helper function for bottom-up merge
 __device__ void gpu_bottomUpMerge(long* source, long* dest, long start, long middle, long end);
-
+__device__ void gpu_bottomUpMerge(long* source, long* dest, long start, long middle, long end, long* sharedMem);
 // GPU helper function to calculate the id of the current thread
 __device__ unsigned int getIdx(dim3* threads, dim3* blocks);
 

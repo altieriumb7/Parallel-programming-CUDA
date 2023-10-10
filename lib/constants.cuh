@@ -14,6 +14,7 @@
 #define UPPER_BIT 10
 #define LOWER_BIT 0
 #define min(a, b) ((a) < (b) ? (a) : (b))
+#define SHARED_MEM_SIZE 2048
 
 
 #endif

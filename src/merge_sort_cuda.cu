@@ -16,7 +16,25 @@ __device__ void gpu_bottomUpMerge(long* source, long* dest, long start, long mid
         }
     }
 }
+__device__ void gpu_bottomUpMerge(long* source, long* dest, long start, long middle, long end, long* sharedMem) {
+    long i = start;
+    long j = middle;
+    long k;
 
+    for (k = start; k < end; k++) {
+        if (i < middle && (j >= end || source[i] < source[j])) {
+            sharedMem[threadIdx.x] = source[i];
+            i++;
+        } else {
+            sharedMem[threadIdx.x] = source[j];
+            j++;
+        }
+
+        __syncthreads(); // Ensure all threads have written to shared memory
+
+        dest[k] = sharedMem[threadIdx.x];
+    }
+}
 // GPU helper function to calculate the id of the current thread
 __device__ unsigned int getIdx(dim3* threads, dim3* blocks) {
     int x;
