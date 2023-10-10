@@ -41,11 +41,11 @@ int main()
     }
 
     unsigned int a[5000];
-    int size = 5000;
+    
     srand(time(NULL));
     for (int i = 0; i < 5000; i++)
     {
-    a[i] = rand ()%5000;
+    a[i] = rand ()%10000;
     }
     unsigned int *dev_a;
     cudaMalloc(&dev_a, size * sizeof(unsigned int));
