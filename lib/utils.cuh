@@ -45,8 +45,7 @@ __host__ void print_array(const unsigned short *data, const unsigned long long N
 /*
     Function that checks if the array is sorted
 */
-bool is_sorted(unsigned short *result, const unsigned long long N);
-
+bool is_sorted(float* result, const int N);
 /*
     Function to check if x is a power of 2
 */

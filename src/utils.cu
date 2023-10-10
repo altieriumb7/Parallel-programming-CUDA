@@ -50,9 +50,9 @@ __host__ void print_array(const unsigned short *data, const unsigned long long N
     printf("\n");
 }
 
-bool is_sorted(unsigned short *result, const unsigned long long N)
+bool is_sorted(float* result, const int N)
 {
-    for (unsigned long long i = 0; i < N - 1; i++)
+    for (unsigned int i = 0; i < N - 1; i++)
     {
         if (result[i] > result[i + 1])
         {

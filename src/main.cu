@@ -43,11 +43,16 @@ int main(int argc, char** argv)
 
     // Print the sorted array or save it to a file
 
-    cout << "\nInput Length : " << size << endl;
+    
 
     end = clock();
     cput = ((double)(end - start)) / CLOCKS_PER_SEC;
-    cout << "\nRunning time = " << cput << " s" << endl;
+    printf("Execution time: %lf\n", cput);
+    if (is_sorted(data,size)){
+        printf("array sorted");
+    }else{
+        printf("array not sorted");
+    }
 
     return 0;
 }
