@@ -161,7 +161,7 @@ void quickSortIterative_shared(int arr[], int l, int h, const int block_size) {
     while (n_i > 0) {
         partition_shared<<<n_b, n_t>>>(d_d, d_l, d_h, n_i);
         int answer;
-        cudaMemcpy(&answer, d_size, sizeof(int), 0, cudaMemcpyDeviceToHost);
+        cudaMemcpyFromSymbol(&answer, d_size, sizeof(int), 0, cudaMemcpyDeviceToHost);
         
         if (answer < SHARED_MEM_SIZE) {
             n_t = answer;
