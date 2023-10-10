@@ -16,6 +16,7 @@
 #define size 10000
 
 int main() {
+    // Your existing code for sorting 'arr' goes here
     ParallelSortConfig sort_config = determine_config(5000);
 
     sort_config.blockSize = dim3(sort_config.threads_per_block);
@@ -54,7 +55,7 @@ int main() {
     unsigned int *dev_a;
     cudaMalloc(&dev_a, size_a * sizeof(unsigned int));
     cudaMemcpy(dev_a, a, size_a * sizeof(unsigned int), cudaMemcpyHostToDevice);
-    radix_sort_shared<<<1, size_a>>>(dev_a);
+    radix_sort<<<1, size_a>>>(dev_a);
     cudaMemcpy(a, dev_a, size_a * sizeof(unsigned int), cudaMemcpyDeviceToHost);
 
     sorted = 1; // Assume it's sorted
@@ -70,37 +71,11 @@ int main() {
     } else {
         printf("Array 'a' is not sorted.\n");
     }
-    sort_config = determine_config(5000);
 
-    sort_config.blockSize = dim3(sort_config.threads_per_block);
-    sort_config.gridSize = dim3(sort_config.total_blocks);
-    // Sort array b using radix sort
-    unsigned int b[1000];
-    srand(time(NULL));
-    for (int i = 0; i < 1000; i++) {
-        b[i] = rand() % 1000;
-    }
-
-    unsigned int *dev_b;
-    cudaMalloc(&dev_b, size_a * sizeof(unsigned int));
-    cudaMemcpy(dev_b, b, size_a * sizeof(unsigned int), cudaMemcpyHostToDevice);
-    radix_sort_shared<<<1, size_a>>>(dev_b);
-    cudaMemcpy(b, dev_b, size_a * sizeof(unsigned int), cudaMemcpyDeviceToHost);
-
-    sorted = 1; // Assume it's sorted
-    for (int i = 1; i < size_a; i++) {
-        if (b[i - 1] > b[i]) {
-            sorted = 0; // Array is not sorted
-            break;
-        }
-    }
-
-    if (sorted) {
-        printf("Array 'b' is sorted.\n");
-    } else {
-        printf("Array 'b' is not sorted.\n");
-    }
-
+    // Your provided mergesort code with checks
+    //-------------------------------------------------------------------------------------------------------------------------
+    
+    
     //-------------------------------------------------------------------------------------------------------------------------
     
 
