@@ -57,8 +57,11 @@ __device__ void partition_by_bit(unsigned int *values, unsigned int bit)
 
 
 
+#define MAX_SHARED_MEMORY_SIZE 1024 // Adjust the size as needed
 
-__device__ void partition_by_bit_shared(unsigned int *values, unsigned int bit, unsigned int *shared_mem,const unsigned long long N)
+// ...
+
+__device__ void partition_by_bit_shared(unsigned int *values, unsigned int bit, unsigned int *shared_mem)
 {
     unsigned int i = threadIdx.x;
     unsigned int size = blockDim.x;
@@ -91,7 +94,7 @@ __device__ void partition_by_bit_shared(unsigned int *values, unsigned int bit, 
     unsigned int pos = p_i ? T_total - 1 + F_total : i - T_total;
 
     // Use shared memory for a more efficient swap
-    __shared__ unsigned int shared_values[N]; // Define an appropriate size here
+    __shared__ unsigned int shared_values[MAX_SHARED_MEMORY_SIZE]; // Use the defined constant here
 
     // Ensure all threads have finished their scan before proceeding
     __syncthreads();
@@ -106,20 +109,21 @@ __device__ void partition_by_bit_shared(unsigned int *values, unsigned int bit, 
     values[i] = shared_values[pos];
 }
 
-__global__ void radix_sort_shared(unsigned int *values,const unsigned long long N)
+__global__ void radix_sort_shared(unsigned int *values)
 {
     int bit;
     for (bit = 0; bit < 32; ++bit)
     {
         // Allocate shared memory for each block
-        __shared__ unsigned int shared_mem[N]; // Define an appropriate size here
+        __shared__ unsigned int shared_mem[MAX_SHARED_MEMORY_SIZE]; // Use the defined constant here
 
-        partition_by_bit_shared(values, bit, shared_mem,N);
+        partition_by_bit_shared(values, bit, shared_mem);
         __syncthreads();
     }
 }
 
-// The rest of your code remains the same...
+// ...
+
 
 
 __device__ int plus_scan(unsigned int *x, unsigned int *shared_mem)

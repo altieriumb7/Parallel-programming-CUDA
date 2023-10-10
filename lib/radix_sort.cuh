@@ -19,9 +19,9 @@ __device__ int plus_scan(unsigned int *x);
 
 // Define the size of the shared memory buffer
 
-__device__ void partition_by_bit_shared(unsigned int *values, unsigned int bit, unsigned int *shared_mem,const unsigned long long N);
+__device__ void partition_by_bit_shared(unsigned int *values, unsigned int bit, unsigned int *shared_mem);
 
-__global__ void radix_sort_shared(unsigned int *values,const unsigned long long N);
+__global__ void radix_sort_shared(unsigned int *values);
 __device__ int plus_scan(unsigned int *x, unsigned int *shared_mem);
 
 

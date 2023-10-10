@@ -109,7 +109,7 @@ int main() {
     cudaMalloc(&device_array, 1000 * sizeof(unsigned int));
     cudaMemcpy(device_array, host_array, 1000 * sizeof(unsigned int), cudaMemcpyHostToDevice);
 
-    radix_sort_shared<<<sort_config.threads_per_block, sort_config.total_blocks >>>(device_array,1000);
+    radix_sort_shared<<<sort_config.threads_per_block, sort_config.total_blocks >>>(device_array);
 
     cudaMemcpy(host_array, device_array, 1000 * sizeof(unsigned int), cudaMemcpyDeviceToHost);
 
