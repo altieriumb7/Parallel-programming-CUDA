@@ -18,9 +18,9 @@ void init_array(unsigned long *data, const unsigned long long N)
     }
 }
 
-__host__ void print_array(const unsigned long *data, const unsigned long long N)
+__host__ void print_array(const unsigned int *data, const unsigned int N)
 {
-    for (unsigned long long i = 0; i < N; i++)
+    for (unsigned int i = 0; i < N; i++)
     {
         printf("%hu ", data[i]);
     }

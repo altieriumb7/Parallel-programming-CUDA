@@ -9,7 +9,7 @@
 #include "../lib/constants.cuh"
  
 int main() {
-    const int arraySize = 60;
+    const unsigned int arraySize = 60;
     unsigned int hdata[arraySize];
     unsigned int ddata_glob[arraySize];
 
@@ -83,6 +83,8 @@ int main() {
         } else {
             printf("Shared memory kernel: Array is NOT sorted correctly.\n");
         }
+        print_array(hdata);
+        print_array(ddata_shared);
         // Free device memory
         cudaFree(ddata_glob);
         cudaFree(ddata_shared);
