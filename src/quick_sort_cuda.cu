@@ -1,5 +1,6 @@
 
 #include "../lib/quick_sort.cuh"
+__device__ int d_size;
 
  void printArr( int arr[], int n )
 {
