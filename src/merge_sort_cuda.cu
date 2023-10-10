@@ -6,8 +6,8 @@ void mergesort(unsigned short  *data, dim3 threadsPerBlock, dim3 blocksPerGrid,u
 {
     unsigned short *D_data;
     unsigned short *D_swp;
-    dim3 D_threads;
-    dim3 D_blocks;
+    dim3 *D_threads;
+    dim3 *D_blocks;
     
     cudaMalloc((void**) &D_data, size * sizeof(long));
     cudaMalloc((void**) &D_swp, size * sizeof(long));
