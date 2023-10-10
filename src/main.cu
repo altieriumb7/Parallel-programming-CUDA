@@ -52,7 +52,7 @@ int main()
     cudaMemcpy( dev_a, a, size * sizeof(unsigned int), cudaMemcpyHostToDevice);
     radix_sort<<<1,size>>>(dev_a);
     cudaMemcpy( a, dev_a, size * sizeof(unsigned int), cudaMemcpyDeviceToHost );
-    sorted = 0;
+    sorted = 1;
     for (int i = 1; i < n; i++) {
         if (a[i - 1] > a[i]) {
             sorted = 0; // Array is not sorted
