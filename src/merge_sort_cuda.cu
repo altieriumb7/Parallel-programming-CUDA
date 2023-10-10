@@ -37,7 +37,7 @@ void mergesort(unsigned short  *data, dim3 threadsPerBlock, dim3 blocksPerGrid,u
         B = B == D_data ? D_swp : D_data;
     }
 
-    cudaMemcpy(data, A, size * sizeof(long), cudaMemcpyDeviceToHos));
+    cudaMemcpy(data, A, size * sizeof(long), cudaMemcpyDeviceToHost);
     
     cudaFree(A);
     cudaFree(B);
