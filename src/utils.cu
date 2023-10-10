@@ -22,7 +22,7 @@ __host__ void print_array(const unsigned int *data, const unsigned int N)
 {
     for (unsigned int i = 0; i < N; i++)
     {
-        printf("%hu ", data[i]);
+        printf("%d ", data[i]);
     }
     printf("\n");
 }
