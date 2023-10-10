@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
 
     start = get_time();
 
-    mergesort(data, sort_config.blockSize, sort_config.gridSize);
+    mergesort(data, sort_config.blockSize, sort_config.gridSize,N);
     end = get_time();
     cudaPeekAtLastError();
     cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost);

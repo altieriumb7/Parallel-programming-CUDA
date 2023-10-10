@@ -2,23 +2,23 @@
 #include "../lib/merge_sort.cuh"
 
 
-void mergesort(unsigned short * data, dim3 threadsPerBlock, dim3 blocksPerGrid) 
+void mergesort(unsigned short  *data, dim3 threadsPerBlock, dim3 blocksPerGrid,unsigned long long size) 
 {
     unsigned short *D_data;
     unsigned short *D_swp;
     dim3 *D_threads;
     dim3 *D_blocks;
     
-    checkCudaErrors(cudaMalloc((void**) &D_data, size * sizeof(long)));
-    checkCudaErrors(cudaMalloc((void**) &D_swp, size * sizeof(long)));
+    cudaMalloc((void**) &D_data, size * sizeof(long));
+    cudaMalloc((void**) &D_swp, size * sizeof(long));
 
-    checkCudaErrors(cudaMemcpy(D_data, data, size * sizeof(long), cudaMemcpyHostToDevice));
+    cudaMemcpy(D_data, data, size * sizeof(long), cudaMemcpyHostToDevice);
  
-    checkCudaErrors(cudaMalloc((void**) &D_threads, sizeof(dim3)));
-    checkCudaErrors(cudaMalloc((void**) &D_blocks, sizeof(dim3)));
+    cudaMalloc((void**) &D_threads, sizeof(dim3));
+    cudaMalloc((void**) &D_blocks, sizeof(dim3));
 
-    checkCudaErrors(cudaMemcpy(D_threads, &threadsPerBlock, sizeof(dim3), cudaMemcpyHostToDevice));
-    checkCudaErrors(cudaMemcpy(D_blocks, &blocksPerGrid, sizeof(dim3), cudaMemcpyHostToDevice));
+    cudaMemcpy(D_threads, &threadsPerBlock, sizeof(dim3), cudaMemcpyHostToDevice);
+    cudaMemcpy(D_blocks, &blocksPerGrid, sizeof(dim3), cudaMemcpyHostToDevice);
 
     unsigned short *A = D_data;
     unsigned short *B = D_swp;
@@ -31,16 +31,16 @@ void mergesort(unsigned short * data, dim3 threadsPerBlock, dim3 blocksPerGrid)
 
         
 
-        gpu_mergesort<<<blocksPerGrid, threadsPerBlock>>>(A, B, width, slices, D_threads, D_blocks);
+        gpu_mergesort<<<blocksPerGrid, threadsPerBlock>>>(A, B, width, slices, D_threads, D_blocks,size);
 
         A = A == D_data ? D_swp : D_data;
         B = B == D_data ? D_swp : D_data;
     }
 
-    checkCudaErrors(cudaMemcpy(data, A, size * sizeof(long), cudaMemcpyDeviceToHost));
+    cudaMemcpy(data, A, size * sizeof(long), cudaMemcpyDeviceToHos));
     
-    checkCudaErrors(cudaFree(A));
-    checkCudaErrors(cudaFree(B));
+    cudaFree(A);
+    cudaFree(B);
 }
 
 __device__ unsigned int getIdx(dim3 *threads, dim3 *blocks) 
@@ -55,7 +55,7 @@ __device__ unsigned int getIdx(dim3 *threads, dim3 *blocks)
 }
 
 
-__global__ void gpu_mergesort(unsigned short *source, unsigned short *dest,unsigned long long width, unsigned long long slices, dim3 *threads, dim3 *blocks) 
+__global__ void gpu_mergesort(unsigned short *source, unsigned short *dest,unsigned long long width, unsigned long long slices, dim3 *threads, dim3 *blocks,unsigned long long size) 
 {
     unsigned int idx = getIdx(threads, blocks);
     unsigned long long start = width*idx*slices, 
