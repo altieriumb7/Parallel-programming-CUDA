@@ -89,11 +89,7 @@ void quickSortIterative (int arr[], int l, int h)
 }
  
 //-----------------------------------------------------------------
-void atomicAdd(int* atomic, int val) {
-    pthread_mutex_lock(&atomic->mutex);
-    atomic->value += val;
-    pthread_mutex_unlock(&atomic->mutex);
-}
+
 
 __global__ void partition_shared(int *arr, int *arr_l, int *arr_h, int n,int dsize) {
     __shared__ int s_data[SHARED_MEM_SIZE]; // Shared memory for one block (adjust size as needed)
