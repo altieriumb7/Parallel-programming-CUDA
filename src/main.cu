@@ -16,7 +16,6 @@
 #define size 10000
 
 int main() {
-    // Your existing code for sorting 'arr' goes here
     ParallelSortConfig sort_config = determine_config(5000);
 
     sort_config.blockSize = dim3(sort_config.threads_per_block);
@@ -55,7 +54,7 @@ int main() {
     unsigned int *dev_a;
     cudaMalloc(&dev_a, size_a * sizeof(unsigned int));
     cudaMemcpy(dev_a, a, size_a * sizeof(unsigned int), cudaMemcpyHostToDevice);
-    radix_sort<<<1, size_a>>>(dev_a);
+    radix_sort_shared<<<1, size_a>>>(dev_a);
     cudaMemcpy(a, dev_a, size_a * sizeof(unsigned int), cudaMemcpyDeviceToHost);
 
     sorted = 1; // Assume it's sorted
@@ -72,9 +71,9 @@ int main() {
         printf("Array 'a' is not sorted.\n");
     }
 
-    // Your provided mergesort code with checks
-    //-------------------------------------------------------------------------------------------------------------------------
+    // Sort array b using radix sort
     unsigned int b[1000];
+    srand(time(NULL));
     for (int i = 0; i < 1000; i++) {
         b[i] = rand() % 1000;
     }
@@ -98,7 +97,7 @@ int main() {
     } else {
         printf("Array 'b' is not sorted.\n");
     }
-    
+
     //-------------------------------------------------------------------------------------------------------------------------
     
 
