@@ -142,7 +142,8 @@ int main() {
     unsigned int *device_array2;
     cudaMalloc(&device_array2, 1000 * sizeof(unsigned int));
     cudaMemcpy(device_array2, host_array2, 1000 * sizeof(unsigned int), cudaMemcpyHostToDevice);
-    unsigned int size_blocks=sort_config.threads_per_block;
+    unsigned int size_blocks=sort_config.threads_per_block[0];
+    printf("%ud",size_blocks);
     quickSortIterative_shared(device_array2, 0, 1000 - 1,size_blocks);
 
     cudaMemcpy(host_array2, device_array2, 1000 * sizeof(unsigned int), cudaMemcpyDeviceToHost);
