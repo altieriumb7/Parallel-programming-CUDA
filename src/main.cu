@@ -10,6 +10,7 @@
 #include "../lib/radix_sort.cuh"
 #include "../lib/utilsParallelSort.cuh"
 
+
 #include <cuda_runtime.h>
 
 #define size 10000
@@ -51,7 +52,7 @@ int main() {
     unsigned int *dev_a;
     cudaMalloc(&dev_a, size_a * sizeof(unsigned int));
     cudaMemcpy(dev_a, a, size_a * sizeof(unsigned int), cudaMemcpyHostToDevice);
-    radix_sort_shared<<<1, size_a>>>(dev_a);
+    radix_sort<<<1, size_a>>>(dev_a);
     cudaMemcpy(a, dev_a, size_a * sizeof(unsigned int), cudaMemcpyDeviceToHost);
 
     sorted = 1; // Assume it's sorted
@@ -69,13 +70,56 @@ int main() {
     }
 
     // Your provided mergesort code with checks
+
+    dim3 threadsPerBlock;
+    dim3 blocksPerGrid;
+
+    threadsPerBlock.x = 32;
+    threadsPerBlock.y = 1;
+    threadsPerBlock.z = 1;
+
+    blocksPerGrid.x = 8;
+    blocksPerGrid.y = 1;
+    blocksPerGrid.z = 1;
+
+    // Create an array of numbers (you can replace this with your input)
+    long data[5000];
+    long size_data = sizeof(data) / sizeof(data[0]);
+
+    // Print unsorted data
+    for (int i = 0; i < 5000; i++) {
+        data[i] = rand() % 100000;
+    }
+
+    // Sort the data using mergesort
+    mergesort(data, size_data, threadsPerBlock, blocksPerGrid);
+
+    
+
+    // Check if the array is sorted
+    if (isSorted(data, size_data)) {
+        printf("Array is sorted.\n");
+    } else {
+        printf("Array is not sorted.\n");
+    }
+    //
+        // Your provided mergesort code with checks
     ParallelSortConfig sort_config = determine_config(5000);
 
     sort_config.blockSize = dim3(sort_config.threads_per_block);
     sort_config.gridSize = dim3(sort_config.total_blocks);
 
     long data2[5000];
-    size_t size_data = sizeof(data2) / sizeof(data2[0]);
+    threadsPerBlock.x = 32;
+    threadsPerBlock.y = 1;
+    threadsPerBlock.z = 1;
+
+    blocksPerGrid.x = 8;
+    blocksPerGrid.y = 1;
+    blocksPerGrid.z = 1;
+
+    // Create an array of numbers (you can replace this with your input)
+    size_data = sizeof(data2) / sizeof(data2[0]);
 
     // Print unsorted data
     for (int i = 0; i < 5000; i++) {
@@ -85,16 +129,18 @@ int main() {
     // Sort the data using mergesort
     mergesort_shared(data2, size_data, sort_config.threads_per_block, sort_config.total_blocks);
 
+    
+
     // Check if the array is sorted
     if (isSorted(data2, size_data)) {
         printf("Array is sorted.\n");
     } else {
         printf("Array is not sorted.\n");
     }
+    printf("Sorted data: ");
+    for (int i = 0; i < size_data; i++) {
+        printf("%ld ", data2[i]);
+    }
+    printf("\n");
 
-
-    // Free GPU memory
-    cudaFree(dev_a);
-
-    return 0;
 }
