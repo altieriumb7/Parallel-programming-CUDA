@@ -19,6 +19,13 @@ int main() {
 
     sort_config.blockSize = dim3(sort_config.threads_per_block);
     sort_config.gridSize = dim3(sort_config.total_blocks);
+    lists_to_merge = ceil(get_n_list_to_merge(N, sort_config.partition_size, sort_config.total_threads) / (float)2);
+
+    /*
+        The number of blocks needed during the merging phase
+    */
+    blocks_involved_in_merging = ceil(lists_to_merge / (float)sort_config.threads_per_block);
+    const size_t size_blocks = blocks_involved_in_merging * sort_config.threads_per_block * sizeof(unsigned long);
     int arr[5000];
     srand(time(NULL));
     for (int i = 0; i < 5000; i++) {
@@ -115,7 +122,6 @@ int main() {
 
     bool sorted_shared = true;
     for (int i = 1; i < 1000; i++) {
-        printf("%lu ",host_array[i]);
 
         if (host_array[i - 1] > host_array[i]) {
             sorted_shared = false;
@@ -131,6 +137,39 @@ int main() {
 
     // Cleanup
     cudaFree(device_array);
+
+    //-----------------------------------------------------------------------------------------------------------------------------------------------------
+    // Testing the shared radix sort
+    unsigned int host_array2[1000];
+    for (int i = 0; i < 1000; i++) {
+        host_array2[i] = rand() % 1000;
+    }
+
+    unsigned int *device_array2;
+    cudaMalloc(&device_array2, 1000 * sizeof(unsigned int));
+    cudaMemcpy(device_array2, host_array2, 1000 * sizeof(unsigned int), cudaMemcpyHostToDevice);
+
+    quickSortIterative(device_array2, 0, 1000 - 1,size_blocks);
+
+    cudaMemcpy(host_array2, device_array2, 1000 * sizeof(unsigned int), cudaMemcpyDeviceToHost);
+
+    bool sorted_shared = true;
+    for (int i = 1; i < 1000; i++) {
+
+        if (host_array2[i - 1] > host_array2[i]) {
+            sorted_shared = false;
+            break;
+        }
+    }
+
+    if (sorted_shared) {
+        printf("Array 'host_array2' is sorted using shared radix sort.\n");
+    } else {
+        printf("Array 'host_array2' is not sorted using shared radix sort.\n");
+    }
+
+    // Cleanup
+    cudaFree(device_array2);
 
     return 0;
 }
