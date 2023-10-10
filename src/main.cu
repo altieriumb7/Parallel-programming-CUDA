@@ -143,11 +143,11 @@ int main() {
     cudaMalloc(&device_array2, 1000 * sizeof(unsigned int));
     cudaMemcpy(device_array2, host_array2, 1000 * sizeof(unsigned int), cudaMemcpyHostToDevice);
     unsigned int size_blocks=sort_config.threads_per_block;
-    quickSortIterative(device_array2, 0, 1000 - 1,size_blocks);
+    quickSortIterative_shared(device_array2, 0, 1000 - 1,size_blocks);
 
     cudaMemcpy(host_array2, device_array2, 1000 * sizeof(unsigned int), cudaMemcpyDeviceToHost);
 
-    bool sorted_shared = true;
+    sorted_shared = true;
     for (int i = 1; i < 1000; i++) {
 
         if (host_array2[i - 1] > host_array2[i]) {
