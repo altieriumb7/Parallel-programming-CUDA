@@ -139,10 +139,11 @@ int main() {
         host_array2[i] = rand() % 1000;
     }
 
-    unsigned int *device_array2;
-    cudaMalloc(&device_array2, 1000 * sizeof(unsigned int));
-    cudaMemcpy(device_array2, host_array2, 1000 * sizeof(unsigned int), cudaMemcpyHostToDevice);
-    quickSortIterative_shared(device_array2, 0, 1000 - 1,sort_config.blockSize.x);
+    int *device_array2;
+    cudaMalloc(&device_array2, 1000 * sizeof(int)); // Change the type here
+    cudaMemcpy(device_array2, host_array2, 1000 * sizeof(int), cudaMemcpyHostToDevice);
+    quickSortIterative_shared(device_array2, 0, 1000 - 1, sort_config.blockSize.x); // Pass int* here
+
 
     cudaMemcpy(host_array2, device_array2, 1000 * sizeof(unsigned int), cudaMemcpyDeviceToHost);
 
