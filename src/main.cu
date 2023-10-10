@@ -9,13 +9,13 @@
 #include "../lib/constants.cuh"
 int main() {
     const int arraySize = WSIZE * LOOPS;
-    unsigned int hdata[arraySize],*ddata;
-    const size_t size_array = arraySize* sizeof(unsigned int);
+    //unsigned int hdata[arraySize],ddata[arraySize];
     double t_start = 0, t_stop = 0,
-    cudaMalloc((void **)&ddata, size_array);
+    unsigned int *hdata,*ddata;
     float totalTime = 0;
-
-    srand(time(NULL));
+    const size_t size_array = arraySize * sizeof(unsigned int);
+    hdata = (unsigned short *)malloc(size_array);
+    cudaHandleError(cudaMalloc((void **)&ddata, size_array));
 
     for (int lcount = 0; lcount < LOOPS; lcount++) {
         // Array elements have values in the range of 1024
@@ -26,7 +26,7 @@ int main() {
             hdata[i] = rand() % range;
         }
 
-        cudaMemcpyToSymbol(ddata, hdata, arraySize * sizeof(unsigned int));
+        cudaMemcpy(ddata, hdata, size_array, cudaMemcpyHostToDevice);
 
         // Execution time measurement: start the clock
         t_start = get_time();
@@ -43,7 +43,7 @@ int main() {
         totalTime += duration;
 
         // Copy data from device to host
-        cudaMemcpyFromSymbol(hdata, ddata, arraySize * sizeof(unsigned int));
+        cudaMemcpy(ddata, hdata, size_array, cudaMemcpyDeviceToHost)
     }
 
     if (isSorted(hdata, arraySize)) {
