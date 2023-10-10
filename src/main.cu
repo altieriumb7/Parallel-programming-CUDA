@@ -10,7 +10,7 @@ int main() {
     const int arraySize = WSIZE * LOOPS;
     unsigned int hdata[arraySize];
     float totalTime = 0;
-
+    double t1=0,t2=0;
     srand(time(NULL));
 
     for (int lcount = 0; lcount < LOOPS; lcount++) {
@@ -26,16 +26,15 @@ int main() {
 
         // Execution time measurement: start the clock
         struct timeval t1, t2;
-        gettimeofday(&t1, NULL);
-
+        t1=get_time()
         parallelRadix<<<1, WSIZE>>>();
         cudaDeviceSynchronize();
 
         // Execution time measurement: stop the clock
-        gettimeofday(&t2, NULL);
+        t2=get_time()
 
         // Calculate the execution time
-        long long duration = (t2.tv_sec - t1.tv_sec) * 1000000LL + (t2.tv_usec - t1.tv_usec);
+        long long duration = t2-t1;
         duration /= 1000; // Convert to milliseconds
         // Summation of each loop's execution time
         totalTime += duration;

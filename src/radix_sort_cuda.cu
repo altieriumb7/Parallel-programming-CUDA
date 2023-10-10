@@ -20,7 +20,7 @@ __device__ unsigned int custom_popc(unsigned int value) {
 
 //__device__ unsigned int ddata[WSIZE];
 
-__global__ void parallelRadix(unsigned int *ddata) {
+__global__ void parallelRadix() {
     __shared__ volatile unsigned int sdata[WSIZE * 2];
 
     // Load from global into shared variable
