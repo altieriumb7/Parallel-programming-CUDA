@@ -13,6 +13,7 @@
 #define LOOPS 1
 #define UPPER_BIT 10
 #define LOWER_BIT 0
+#define min(a, b) ((a) < (b) ? (a) : (b))
 
 
 #endif
