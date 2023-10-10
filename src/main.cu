@@ -109,7 +109,7 @@ int main() {
     //
         // Your provided mergesort code with checks
     
-
+    data=0;
     threadsPerBlock.x = 32;
     threadsPerBlock.y = 1;
     threadsPerBlock.z = 1;
