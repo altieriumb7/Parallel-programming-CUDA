@@ -1,57 +1,56 @@
-#include <stdio.h>
+#include <iostream>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <math.h>
-#include <cuda.h>
-#include <assert.h>
-#include "../lib/radix_sort.cuh"
-#include "../lib/utils.cuh"
-int main() {
-    const int arraySize = WSIZE * LOOPS;
-    unsigned int hdata[arraySize];
-    float totalTime = 0;
-    double t1=0,t2=0;
-    srand(time(NULL));
+#include "helper_cuda.h"
+#include <sys/time.h>
+#include "wb.h"
+using namespace std;
+#include "../lib/utilsParallelSort.cuh"
 
-    for (int lcount = 0; lcount < LOOPS; lcount++) {
-        // Array elements have values in the range of 1024
-        unsigned int range = 1U << UPPER_BIT;
 
-        // Fill the array with random elements
-        for (int i = 0; i < arraySize; i++) {
-            hdata[i] = rand() % range;
+
+
+bool verbose;
+int main(int argc, char** argv) 
+{
+    double start=0,end=0;
+    double cput;
+    unsigned short *data, *dev_data;
+    unsigned long long N = 512;
+    for (int i = 1; i < argc; i++)
+    {
+        if (strcmp(argv[i], "-w") == 0)
+        {
+            write_output = true;
         }
-
-        cudaMemcpyToSymbol(ddata, hdata, arraySize * sizeof(unsigned int));
-
-        // Execution time measurement: start the clock
-        struct timeval t1, t2;
-        t1=get_time();
-        parallelRadix<<<1, WSIZE>>>();
-        cudaDeviceSynchronize();
-
-        // Execution time measurement: stop the clock
-        t2=get_time();
-
-        // Calculate the execution time
-        long long duration = t2-t1;
-        duration /= 1000; // Convert to milliseconds
-        // Summation of each loop's execution time
-        totalTime += duration;
-
-        // Copy data from device to host
-        cudaMemcpyFromSymbol(hdata, ddata, arraySize * sizeof(unsigned int));
+        else
+        {
+            N = atoi(argv[i]);
+        }
     }
+    const size_t size_array = N * sizeof(unsigned short);
+    data = (unsigned short *)malloc(size_array);
+    cudaHandleError(cudaMalloc((void **)&dev_data, size_array));
+    init_array(data, N);
+    sort_config = determine_config(N);
 
-    if (isSorted(hdata, arraySize)) {
-        printf("Shared memory kernel: Array is sorted correctly.\n");
-    } else {
-        printf("Shared memory kernel: Array is NOT sorted correctly.\n");
+    sort_config.blockSize = dim3(sort_config.threads_per_block);
+    sort_config.gridSize = dim3(sort_config.total_blocks);
+    cudaHandleError(cudaMemcpy(dev_data, data, size_array, cudaMemcpyHostToDevice));
+
+    
+    start = get_time();
+
+    mergesort(data, sort_config.blockSize, sort_config.gridSize);
+    end = get_time();
+    cudaHandleError(cudaPeekAtLastError());
+    cudaHandleError(cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost));
+
+    double cput = ((double)(end - start)) / 1000;
+    printf("\nRunning time = %f s\n", cput);
+    if(is_sorted(data,N)){
+        printf('Array sorted propertly');
+    }else{
+        printf('Array sorted improperly');
     }
-
-    printf("Parallel Radix Sort:\n");
-    printf("Array size = %d\n", arraySize);
-    printf("Time elapsed = %g milliseconds\n", totalTime);
-
     return 0;
 }
