@@ -18,24 +18,24 @@ int main() {
 
     float totalTime_glob = 0;
     float totalTime_shared = 0;
+    unsigned int range = 1 << UPPER_BIT;
 
+    // Fill the array with random elements
+    for (int i = 0; i < arraySize; i++) {
+        hdata[i] = rand() % range;
+    }
+
+    cudaMalloc((void**)&ddata_glob, arraySize * sizeof(unsigned int));
+    cudaMalloc((void**)&ddata_shared, arraySize * sizeof(unsigned int));
+
+    // Copy data from host to device for global memory kernel
+    cudaMemcpy(ddata_glob, hdata, arraySize * sizeof(unsigned int), cudaMemcpyHostToDevice);
+
+    // Copy data from host to device for shared memory kernel
+    cudaMemcpy(ddata_shared, hdata, arraySize * sizeof(unsigned int), cudaMemcpyHostToDevice);
     for (int lcount = 0; lcount < LOOPS; lcount++) {
         // Array elements have values in the range of 1024
-        unsigned int range = 1 << UPPER_BIT;
-
-        // Fill the array with random elements
-        for (int i = 0; i < arraySize; i++) {
-            hdata[i] = rand() % range;
-        }
-
-        cudaMalloc((void**)&ddata_glob, arraySize * sizeof(unsigned int));
-        cudaMalloc((void**)&ddata_shared, arraySize * sizeof(unsigned int));
-
-        // Copy data from host to device for global memory kernel
-        cudaMemcpy(ddata_glob, hdata, arraySize * sizeof(unsigned int), cudaMemcpyHostToDevice);
-
-        // Copy data from host to device for shared memory kernel
-        cudaMemcpy(ddata_shared, hdata, arraySize * sizeof(unsigned int), cudaMemcpyHostToDevice);
+        
 
         // Execution time measurement for global memory kernel
         cudaEvent_t start_glob, stop_glob;
@@ -53,6 +53,7 @@ int main() {
         cudaEventElapsedTime(&elapsedTime_glob, start_glob, stop_glob);
         totalTime_glob += elapsedTime_glob;
         cudaMemcpy(hdata, ddata_glob, arraySize * sizeof(unsigned int), cudaMemcpyDeviceToHost);
+        print_array(hdata,arraySize);
 
         if (isSorted(hdata, arraySize)) {
             printf("Global memory kernel: Array is sorted correctly.\n");
@@ -60,7 +61,11 @@ int main() {
             printf("Global memory kernel: Array is NOT sorted correctly.\n");
         }
 
-        // Execution time measurement for shared memory kernel
+        
+    }
+    for (int lcount = 0; lcount < LOOPS; lcount++) {
+
+    // Execution time measurement for shared memory kernel
         cudaEvent_t start_shared, stop_shared;
         cudaEventCreate(&start_shared);
         cudaEventCreate(&stop_shared);
@@ -84,7 +89,6 @@ int main() {
             printf("Shared memory kernel: Array is NOT sorted correctly.\n");
         }
         print_array(hdata,arraySize);
-        print_array(ddata_shared,arraySize);
         // Free device memory
         cudaFree(ddata_glob);
         cudaFree(ddata_shared);
