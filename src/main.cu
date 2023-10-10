@@ -109,7 +109,7 @@ int main() {
     //
         // Your provided mergesort code with checks
     
-    data=0;
+    long data2[5000];
     threadsPerBlock.x = 32;
     threadsPerBlock.y = 1;
     threadsPerBlock.z = 1;
@@ -119,20 +119,20 @@ int main() {
     blocksPerGrid.z = 1;
 
     // Create an array of numbers (you can replace this with your input)
-    size_data = sizeof(data) / sizeof(data[0]);
+    size_data = sizeof(data2) / sizeof(data2[0]);
 
     // Print unsorted data
     for (int i = 0; i < 5000; i++) {
-        data[i] = rand() % 100000;
+        data2[i] = rand() % 100000;
     }
 
     // Sort the data using mergesort
-    mergesort_shared(data, size_data, threadsPerBlock, blocksPerGrid);
+    mergesort_shared(data2, size_data, threadsPerBlock, blocksPerGrid);
 
     
 
     // Check if the array is sorted
-    if (isSorted(data, size_data)) {
+    if (isSorted(data2, size_data)) {
         printf("Array is sorted.\n");
     } else {
         printf("Array is not sorted.\n");
