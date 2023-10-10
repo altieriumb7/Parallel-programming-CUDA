@@ -95,6 +95,8 @@ __device__ void partition_by_bit_shared(unsigned int *values, unsigned int bit, 
     } else {
         values[i - T_total] = x_i;
     }
+    __syncthreads();
+
 }
 
 __global__ void radix_sort_shared(unsigned int *values)
