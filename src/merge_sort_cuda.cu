@@ -109,21 +109,31 @@ int isSorted(long* data, long size) {
 
 
 
+// ...
+
+// GPU helper function for bottom-up merge
 __device__ void gpu_bottomUpMerge(long* source, long* dest, long start, long middle, long end, long* shared_mem) {
     long i = start;
     long j = middle;
-    for (long k = start + threadIdx.x; k < end; k += blockDim.x) {
-        if (i < middle && (j >= end || source[i] < source[j])) {
+    long k = start + threadIdx.x;  // Compute the starting index for this thread in shared memory
+    long limit = start + blockDim.x; // Calculate the limit for the loop
+
+    while (k < end) {
+        if (i < middle && (j >= end || source[i] <= source[j])) {
             shared_mem[threadIdx.x] = source[i];
             i++;
         } else {
             shared_mem[threadIdx.x] = source[j];
             j++;
         }
+        k += blockDim.x; // Increment k by the number of threads in the block
         __syncthreads(); // Ensure all threads have written to shared memory
 
         // Copy data from shared memory back to destination array
-        dest[k] = shared_mem[threadIdx.x];
+        if (k < limit) {
+            dest[k] = shared_mem[threadIdx.x];
+        }
+        __syncthreads(); // Ensure all threads have copied data back
     }
 }
 
@@ -152,6 +162,7 @@ __global__ void gpu_mergesort_shared(long* source, long* dest, long size, long w
         start += width;
     }
 }
+
 
 // Mergesort function
 void mergesort_shared(long* data, long size, dim3 threadsPerBlock, dim3 blocksPerGrid) {
