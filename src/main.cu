@@ -25,6 +25,19 @@ int main()
        }
     int n = sizeof( arr ) / sizeof( *arr );
     quickSortIterative( arr, 0, n - 1 );
-    printArr( arr, n );
+    int sorted = 1; // Assume it's sorted
+    for (int i = 1; i < n; i++) {
+        if (arr[i - 1] > arr[i]) {
+            sorted = 0; // Array is not sorted
+            break;
+        }
+    }
+
+    if (sorted) {
+        printf("Array is sorted.\n");
+    } else {
+        printf("Array is not sorted.\n");
+    }
+
     return 0;
 }
