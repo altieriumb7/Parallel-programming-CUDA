@@ -55,7 +55,7 @@ __device__ unsigned int getIdx(dim3* threads, dim3* blocks)
            blockIdx.z  * (x *= blocks->y);
 }
 
-__global__ void gpu_mergesort(float* source, float* dest, long width, long slices, dim3* threads, dim3* blocks.unsigned long long size) 
+__global__ void gpu_mergesort(float* source, float* dest, long width, long slices, dim3* threads, dim3* blocks,unsigned long long size) 
 {
     unsigned int idx = getIdx(threads, blocks);
     long start = width * idx * slices, middle, end;
