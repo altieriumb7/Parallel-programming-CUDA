@@ -104,7 +104,7 @@ int main() {
     }
     //
         // Your provided mergesort code with checks
-    sort_config = determine_config(5000);
+    ParallelSortConfig sort_config = determine_config(5000);
 
     sort_config.blockSize = dim3(sort_config.threads_per_block);
     sort_config.gridSize = dim3(sort_config.total_blocks);
