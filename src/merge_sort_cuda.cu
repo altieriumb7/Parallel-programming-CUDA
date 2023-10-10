@@ -1,4 +1,3 @@
-#include "mergesort.cuh"
 #include <cuda_runtime.h>
 #include "../lib/constants.cuh"
 #include "../lib/merge_sort.cuh"
