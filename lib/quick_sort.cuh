@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <cuda_runtime.h>
 #include <time.h>
+#include "../lib/constants.cuh"
 
 void printArr( int arr[], int n );
 __global__ void partition (int *arr, int *arr_l, int *arr_h, int n);
