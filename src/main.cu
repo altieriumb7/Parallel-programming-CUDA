@@ -26,12 +26,12 @@ int main() {
 
         // Execution time measurement: start the clock
         struct timeval t1, t2;
-        t1=get_time()
+        t1=get_time();
         parallelRadix<<<1, WSIZE>>>();
         cudaDeviceSynchronize();
 
         // Execution time measurement: stop the clock
-        t2=get_time()
+        t2=get_time();
 
         // Calculate the execution time
         long long duration = t2-t1;
