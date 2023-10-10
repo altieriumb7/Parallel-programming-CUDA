@@ -7,11 +7,12 @@
     for ( i = 0; i < n; ++i )
         printf( "%d ", arr[i] );
 }
+__device__ int d_size;
 
 __global__ void partition (int *arr, int *arr_l, int *arr_h, int n)
 {
     int z = blockIdx.x*blockDim.x+threadIdx.x;
-    int d_size = 0;
+    d_size = 0;
     __syncthreads();
     if (z<n)
       {
@@ -49,7 +50,7 @@ __global__ void partition (int *arr, int *arr_l, int *arr_h, int n)
       }
 }
  
-void quickSortIterative (int arr[], int l, int h)
+void quickSortIterative (int arr[], int l, int h,int d_size)
 {
     int lstack[ h - l + 1 ], hstack[ h - l + 1];
  
@@ -91,7 +92,7 @@ void quickSortIterative (int arr[], int l, int h)
 //-----------------------------------------------------------------
 
 
-__global__ void partition_shared(int *arr, int *arr_l, int *arr_h, int n,int dsize) {
+__global__ void partition_shared(int *arr, int *arr_l, int *arr_h, int n) {
     __shared__ int s_data[SHARED_MEM_SIZE]; // Shared memory for one block (adjust size as needed)
     int z = blockIdx.x * blockDim.x + threadIdx.x;
     d_size = 0;
@@ -144,7 +145,7 @@ __global__ void partition_shared(int *arr, int *arr_l, int *arr_h, int n,int dsi
     }
 }
 
-void quickSortIterative_shared(int arr[], int l, int h,int d_size) {
+void quickSortIterative_shared(int arr[], int l, int h) {
     int lstack[h - l + 1], hstack[h - l + 1];
 
     int top = -1, *d_d, *d_l, *d_h;
@@ -166,7 +167,7 @@ void quickSortIterative_shared(int arr[], int l, int h,int d_size) {
     int n_i = 1;
 
     while (n_i > 0) {
-        partition_shared<<<n_b, n_t>>>(d_d, d_l, d_h, n_i,d_size);
+        partition_shared<<<n_b, n_t>>>(d_d, d_l, d_h, n_i);
         int answer;
         cudaMemcpyFromSymbol(&answer, d_size, sizeof(int), 0, cudaMemcpyDeviceToHost);
 
