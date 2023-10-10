@@ -13,4 +13,3 @@ void quickSortIterative (int arr[], int l, int h);
 
 __global__ void partition_shared(int *arr, int *arr_l, int *arr_h, int n,int dsize);
 void quickSortIterative_shared(int arr[], int l, int h,int d_size);
-void atomicAdd(int* atomic, int val);
