@@ -55,16 +55,12 @@ __device__ void partition_by_bit(unsigned int *values, unsigned int bit)
 
 //-------------------------------------
 
-#include "../lib/radix_sort.cuh"
-
-#define WARP_SIZE 32 // The warp size is typically 32 in most GPUs
-
 __global__ void radix_sort_shared(unsigned int *values)
 {
     int bit;
     unsigned int i = threadIdx.x;
     unsigned int size = blockDim.x;
-    unsigned int *s_values = extern __shared__ unsigned int shared_values[];
+    extern __shared__ unsigned int shared_values[];
 
     // Load data into shared memory
     shared_values[i] = values[i];
