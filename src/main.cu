@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 
     // Initialize data here or load it from a file
 
-    mergesort(data, threadsPerBlock, blocksPerGrid);
+    mergesort(data, threadsPerBlock, blocksPerGrid,size);
 
     // Print the sorted array or save it to a file
 

@@ -5,7 +5,7 @@
 __device__ float min(float a, float b) {
     return (a < b) ? a : b;
 }
-void mergesort(float* data, dim3 threadsPerBlock, dim3 blocksPerGrid) 
+void mergesort(float* data, dim3 threadsPerBlock, dim3 blocksPerGrid,unsigned long long size) 
 {
     float* D_data;
     float* D_swp;
@@ -32,7 +32,7 @@ void mergesort(float* data, dim3 threadsPerBlock, dim3 blocksPerGrid)
     for (int width = 2; width < (size << 1); width <<= 1) {
         long slices = size / ((nThreads) * width) + 1;
 
-        gpu_mergesort<<<blocksPerGrid, threadsPerBlock>>>(A, B, width, slices, D_threads, D_blocks);
+        gpu_mergesort<<<blocksPerGrid, threadsPerBlock>>>(A, B, width, slices, D_threads, D_blocks,size);
 
         A = A == D_data ? D_swp : D_data;
         B = B == D_data ? D_swp : D_data;
@@ -55,7 +55,7 @@ __device__ unsigned int getIdx(dim3* threads, dim3* blocks)
            blockIdx.z  * (x *= blocks->y);
 }
 
-__global__ void gpu_mergesort(float* source, float* dest, long width, long slices, dim3* threads, dim3* blocks) 
+__global__ void gpu_mergesort(float* source, float* dest, long width, long slices, dim3* threads, dim3* blocks.unsigned long long size) 
 {
     unsigned int idx = getIdx(threads, blocks);
     long start = width * idx * slices, middle, end;
