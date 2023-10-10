@@ -83,8 +83,8 @@ int main() {
         } else {
             printf("Shared memory kernel: Array is NOT sorted correctly.\n");
         }
-        print_array(hdata);
-        print_array(ddata_shared);
+        print_array(hdata,arraySize);
+        print_array(ddata_shared,arraySize);
         // Free device memory
         cudaFree(ddata_glob);
         cudaFree(ddata_shared);
