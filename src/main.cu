@@ -49,9 +49,9 @@ int main()
     }
     unsigned int *dev_a;
     cudaMalloc(&dev_a, size * sizeof(unsigned int));
-    cudaMemcpy( dev_a, a, size * sizeof(unsigned int), cudaMemcpyHostToDevice);
+    cudaMemcpy( dev_a, a, 5000 * sizeof(unsigned int), cudaMemcpyHostToDevice);
     radix_sort<<<1,5000>>>(dev_a);
-    cudaMemcpy( a, dev_a, size * sizeof(unsigned int), cudaMemcpyDeviceToHost );
+    cudaMemcpy( a, dev_a, 5000 * sizeof(unsigned int), cudaMemcpyDeviceToHost );
     sorted = 1;
     for (int i = 1; i < n; i++) {
         if (a[i - 1] > a[i]) {
