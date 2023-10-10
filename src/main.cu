@@ -4,7 +4,6 @@
 #include <string.h> // Include for strcmp
 #include <cuda.h>
 #include <assert.h>
-#include "../lib/radix_sort.cuh"
 #include "../lib/merge_sort.cuh"
 #include "../lib/utils.cuh"
 #include "../lib/utilsParallelSort.cuh"
