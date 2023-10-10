@@ -55,127 +55,58 @@ __device__ void partition_by_bit(unsigned int *values, unsigned int bit)
 
 //-------------------------------------
 
+#include "../lib/radix_sort.cuh"
 
-
-#define MAX_SHARED_MEMORY_SIZE 1024 // Adjust the size as needed
-
-// ...
-
-__device__ void partition_by_bit_shared(unsigned int *values, unsigned int bit, unsigned int *shared_mem)
-{
-    unsigned int i = threadIdx.x;
-    unsigned int size = blockDim.x;
-    unsigned int x_i = values[i];          // Value of integer at position i
-    unsigned int p_i = (x_i >> bit) & 1;   // Value of bit at position bit
-
-    // Store the value of p_i in shared memory
-    shared_mem[i] = p_i;
-    
-    __syncthreads();
-
-    // Perform a parallel prefix sum (scan) on the shared memory array
-    for (unsigned int offset = 1; offset < size; offset *= 2) {
-        unsigned int t;
-        if (i >= offset) {
-            t = shared_mem[i - offset];
-        }
-        __syncthreads();
-        if (i >= offset) {
-            shared_mem[i] += t;
-        }
-        __syncthreads();
-    }
-
-    // Calculate the total number of 1s (T_total) and 0s (F_total)
-    unsigned int T_total = shared_mem[size - 1];
-    unsigned int F_total = size - T_total;
-
-    // Calculate the position for the current element in the sorted order
-    unsigned int pos = p_i ? T_total - 1 + F_total : i - T_total;
-
-    // Use shared memory for a more efficient swap
-    __shared__ unsigned int shared_values[MAX_SHARED_MEMORY_SIZE]; // Use the defined constant here
-
-    // Ensure all threads have finished their scan before proceeding
-    __syncthreads();
-
-    // Copy values to shared memory
-    shared_values[shared_mem[i]] = x_i;
-    
-    // Ensure all threads have finished copying
-    __syncthreads();
-
-    // Copy values back to the original array
-    values[i] = shared_values[pos];
-}
+#define WARP_SIZE 32 // The warp size is typically 32 in most GPUs
 
 __global__ void radix_sort_shared(unsigned int *values)
 {
     int bit;
-    for (bit = 0; bit < 32; ++bit)
-    {
-        // Allocate shared memory for each block
-        __shared__ unsigned int shared_mem[MAX_SHARED_MEMORY_SIZE]; // Use the defined constant here
-
-        partition_by_bit_shared(values, bit, shared_mem);
-        __syncthreads();
-    }
-}
-
-// ...
-
-
-
-__device__ int plus_scan(unsigned int *x, unsigned int *shared_mem)
-{
     unsigned int i = threadIdx.x;
-    unsigned int n = blockDim.x;
-    unsigned int offset;
+    unsigned int size = blockDim.x;
+    unsigned int *s_values = extern __shared__ unsigned int shared_values[];
 
-    for (offset = 1; offset < n; offset *= 2)
-    {
-        unsigned int t;
-
-        if (i >= offset)
-            t = x[i - offset];
-
-        __syncthreads();
-
-        if (i >= offset)
-            x[i] = t + x[i];
-
-        __syncthreads();
-    }
-
-   
-    // Copy the inclusive scan results to shared memory
-    shared_mem[i] = x[i];
+    // Load data into shared memory
+    shared_values[i] = values[i];
     __syncthreads();
 
-    // Perform a block-level exclusive scan on shared memory
-    for (offset = 1; offset < n; offset *= 2)
+    // Perform radix sort on each bit position
+    for (bit = 0; bit < 32; ++bit)
     {
-        unsigned int t;
+        unsigned int p_i = (shared_values[i] >> bit) & 1;
 
-        if (i >= offset)
-            t = shared_mem[i - offset];
+        // Perform a parallel prefix sum (scan) on the shared memory array
+        for (unsigned int offset = 1; offset < size; offset *= 2)
+        {
+            unsigned int t;
 
+            if (i >= offset)
+                t = shared_values[i - offset];
+
+            __syncthreads();
+
+            if (i >= offset)
+                shared_values[i] += t;
+
+            __syncthreads();
+        }
+
+        // Calculate the total number of 1s (T_total) and 0s (F_total)
+        unsigned int T_total = shared_values[size - 1];
+        unsigned int F_total = size - T_total;
+
+        // Calculate the position for the current element in the sorted order
+        unsigned int pos = p_i ? T_total - 1 + F_total : i - T_total;
+
+        // Use shared memory for a more efficient swap
+        unsigned int temp = shared_values[i];
         __syncthreads();
 
-        if (i >= offset)
-            shared_mem[i] = t + shared_mem[i];
-
+        // Update the values array based on the partitioning
+        shared_values[pos] = temp;
         __syncthreads();
     }
 
-    // Calculate the total sum from the last element of shared memory
-    int total_sum = shared_mem[n - 1];
-
-    // Add the total sum to each element in the block
-    x[i] += total_sum;
-
-
-    return x[i];
+    // Store the sorted data back to global memory
+    values[i] = shared_values[i];
 }
-
-
