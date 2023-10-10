@@ -91,61 +91,63 @@ void quickSortIterative (int arr[], int l, int h)
  
 //-----------------------------------------------------------------
 
+__shared__ int sharedArr[SHARED_MEM_SIZE]; 
 
-__global__ void partition_shared(int *arr, int *arr_l, int *arr_h, int n) {
-    __shared__ int s_data[SHARED_MEM_SIZE]; // Shared memory for one block (adjust size as needed)
+
+__global__ void partition_shared(int *arr, int *arr_l, int *arr_h, int n)
+{
     int z = blockIdx.x * blockDim.x + threadIdx.x;
     d_size = 0;
+    __syncthreads();
 
-    if (z < n) {
+    if (z < n)
+    {
+        // Load data into shared memory
+        sharedArr[threadIdx.x] = arr[z];
+        __syncthreads();
+
         int h = arr_h[z];
         int l = arr_l[z];
-        int x = arr[h];
+        int x = sharedArr[threadIdx.x]; // Use shared memory
         int i = (l - 1);
         int temp;
-
-        // Copy data to shared memory
-        for (int j = threadIdx.x; j < h - l + 1; j += blockDim.x) {
-            s_data[j] = arr[l + j];
-        }
-
-        __syncthreads(); // Ensure all data is in shared memory
-
-        for (int j = 0; j < h - l; j++) {
-            if (s_data[j] <= x) {
+        
+        for (int j = l; j <= h - 1; j++)
+        {
+            if (sharedArr[j - l] <= x) // Adjust for shared memory
+            {
                 i++;
-                temp = s_data[i - l];
-                s_data[i - l] = s_data[j];
-                s_data[j] = temp;
+                temp = sharedArr[i - l]; // Adjust for shared memory
+                sharedArr[i - l] = sharedArr[j - l]; // Adjust for shared memory
+                sharedArr[j - l] = temp; // Adjust for shared memory
             }
         }
 
-        temp = s_data[i - l + 1];
-        s_data[i - l + 1] = arr[h];
-        arr[h] = temp;
-
+        temp = sharedArr[i + 1 - l]; // Adjust for shared memory
+        sharedArr[i + 1 - l] = sharedArr[h - l]; // Adjust for shared memory
+        sharedArr[h - l] = temp; // Adjust for shared memory
         int p = (i + 1);
 
-        if (p - 1 > l) {
+        if (p - 1 > l)
+        {
             int ind = atomicAdd(&d_size, 1);
             arr_l[ind] = l;
             arr_h[ind] = p - 1;
         }
-
-        if (p + 1 < h) {
+        if (p + 1 < h)
+        {
             int ind = atomicAdd(&d_size, 1);
             arr_l[ind] = p + 1;
             arr_h[ind] = h;
         }
 
-        // Copy the sorted data back to global memory
-        for (int j = threadIdx.x; j < h - l + 1; j += blockDim.x) {
-            arr[l + j] = s_data[j];
-        }
+        // Store the results back to global memory
+        arr[z] = sharedArr[threadIdx.x];
     }
 }
 
-void quickSortIterative_shared(int arr[], int l, int h) {
+void quickSortIterative_shared(int arr[], int l, int h)
+{
     int lstack[h - l + 1], hstack[h - l + 1];
 
     int top = -1, *d_d, *d_l, *d_h;
@@ -162,22 +164,26 @@ void quickSortIterative_shared(int arr[], int l, int h) {
     cudaMalloc(&d_h, (h - l + 1) * sizeof(int));
     cudaMemcpy(d_h, hstack, (h - l + 1) * sizeof(int), cudaMemcpyHostToDevice);
 
-    int n_t = 1024; // Use the maximum number of threads per block
+    int n_t = 1;
     int n_b = 1;
     int n_i = 1;
-
-    while (n_i > 0) {
-        partition_shared<<<n_b, n_t>>>(d_d, d_l, d_h, n_i);
+    while (n_i > 0)
+    {
+        partition<<<n_b, n_t>>>(d_d, d_l, d_h, n_i);
         int answer;
         cudaMemcpyFromSymbol(&answer, d_size, sizeof(int), 0, cudaMemcpyDeviceToHost);
-
-        n_t = min(answer, SHARED_MEM_SIZE);
-        n_b = (answer + n_t - 1) / n_t; // Calculate the number of blocks
+        if (answer < 1024)
+        {
+            n_t = answer;
+        }
+        else
+        {
+            n_t = 1024;
+            n_b = answer / n_t + (answer % n_t == 0 ? 0 : 1);
+        }
         n_i = answer;
-
         cudaMemcpy(arr, d_d, (h - l + 1) * sizeof(int), cudaMemcpyDeviceToHost);
     }
-    cudaFree(d_d);
-    cudaFree(d_l);
-    cudaFree(d_h);
 }
+
+

@@ -131,19 +131,18 @@ int main() {
 
     // Cleanup
     cudaFree(device_array);
-    /*
+    
     //-----------------------------------------------------------------------------------------------------------------------------------------------------
     // Testing the shared radix sort
     int host_array2[1000];
     for (int i = 0; i < 1000; i++) {
-        host_array2[i] = rand() % 100000;
+        host_array2[i] = rand() % 10000;
     }
 
     int *device_array2;
     cudaMalloc(&device_array2, 1000 * sizeof(int)); // Change the type here
     cudaMemcpy(device_array2, host_array2, 1000 * sizeof(int), cudaMemcpyHostToDevice);
-    const int blck_x=sort_config.blockSize.x;
-    quickSortIterative_shared(device_array2, 0, 1000 - 1); // Pass int* here
+    quickSortIterative_shared(device_array2, 0, 1000 - 1); 
 
 
     cudaMemcpy(host_array2, device_array2, 1000 * sizeof(unsigned int), cudaMemcpyDeviceToHost);
@@ -165,6 +164,6 @@ int main() {
 
     // Cleanup
     cudaFree(device_array2);
-    */
+    
     return 0;
 }
