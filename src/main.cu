@@ -93,15 +93,15 @@ int main() {
     cudaMemcpy(host_array, device_array, ARRAY_SIZE * sizeof(unsigned int), cudaMemcpyDeviceToHost);
 
     // Verify if the array is sorted
-    bool sorted = true;
+    bool sorted_2 = true;
     for (int i = 1; i < ARRAY_SIZE; i++) {
         if (host_array[i - 1] > host_array[i]) {
-            sorted = false;
+            sorted_2 = false;
             break;
         }
     }
 
-    if (sorted) {
+    if (sorted_2) {
         printf("Array is sorted.\n");
     } else {
         printf("Array is not sorted.\n");
