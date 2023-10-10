@@ -92,11 +92,6 @@ int main() {
         printf("Array is not sorted.\n");
     }
 
-    printf("Sorted data: ");
-    for (int i = 0; i < size_data; i++) {
-        printf("%ld ", data2[i]);
-    }
-    printf("\n");
 
     // Free GPU memory
     cudaFree(dev_a);
