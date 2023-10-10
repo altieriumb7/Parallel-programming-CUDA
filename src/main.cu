@@ -41,20 +41,20 @@ int main() {
     // Add the provided code for radix sort here
 
     unsigned int a[1000];
-    int size = 1000;
+    int size_a = 1000;
     srand(time(NULL));
     for (int i = 0; i < 1000; i++) {
         a[i] = rand() % 1000;
     }
 
     unsigned int *dev_a;
-    cudaMalloc(&dev_a, size * sizeof(unsigned int));
-    cudaMemcpy(dev_a, a, size * sizeof(unsigned int), cudaMemcpyHostToDevice);
-    radix_sort<<<1, size>>>(dev_a);
-    cudaMemcpy(a, dev_a, size * sizeof(unsigned int), cudaMemcpyDeviceToHost);
+    cudaMalloc(&dev_a, size_a * sizeof(unsigned int));
+    cudaMemcpy(dev_a, a, size_a * sizeof(unsigned int), cudaMemcpyHostToDevice);
+    radix_sort<<<1, size_a>>>(dev_a);
+    cudaMemcpy(a, dev_a, size_a * sizeof(unsigned int), cudaMemcpyDeviceToHost);
 
     sorted = 1; // Assume it's sorted
-    for (int i = 1; i < size; i++) {
+    for (int i = 1; i < size_a; i++) {
         if (a[i - 1] > a[i]) {
             sorted = 0; // Array is not sorted
             break;
