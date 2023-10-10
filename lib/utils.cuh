@@ -13,8 +13,7 @@ double get_time(void);
 void init_array(unsigned long *data, const unsigned long long N);
 
 
-__host__ void print_array(const unsigned long *data, const unsigned long long N);
-
+__host__ void print_array(const unsigned int *data, const unsigned int N);
 
 bool isSorted(const unsigned int *arr, int size);
 bool is_power_of_two(const unsigned long x);
