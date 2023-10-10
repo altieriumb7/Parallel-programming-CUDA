@@ -105,6 +105,38 @@ int main() {
     } else {
         printf("Array is not sorted.\n");
     }
+    //
+        // Your provided mergesort code with checks
+    dim3 threadsPerBlock;
+    dim3 blocksPerGrid;
 
-    return 0;
+    threadsPerBlock.x = 32;
+    threadsPerBlock.y = 1;
+    threadsPerBlock.z = 1;
+
+    blocksPerGrid.x = 8;
+    blocksPerGrid.y = 1;
+    blocksPerGrid.z = 1;
+
+    // Create an array of numbers (you can replace this with your input)
+    long data[5000];
+    long size_data = sizeof(data) / sizeof(data[0]);
+
+    // Print unsorted data
+    for (int i = 0; i < 5000; i++) {
+        data[i] = rand() % 100000;
+    }
+
+    // Sort the data using mergesort
+    mergesort_shared(data, size_data, threadsPerBlock, blocksPerGrid);
+
+    
+
+    // Check if the array is sorted
+    if (isSorted(data, size_data)) {
+        printf("Array is sorted.\n");
+    } else {
+        printf("Array is not sorted.\n");
+    }
+
 }
