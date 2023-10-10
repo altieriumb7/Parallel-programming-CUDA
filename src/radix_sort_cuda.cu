@@ -58,7 +58,7 @@ __device__ void partition_by_bit(unsigned int *values, unsigned int bit)
 __global__ void radix_sort_shared(unsigned int *values)
 {
     int  bit;
-    __shared__ unsigned int sharedValues[BLOCK_SIZE];  // Define shared memory for values
+    __shared__ unsigned int sharedValues[1024];  // Define shared memory for values
     unsigned int* sValues = sharedValues;
 
     for( bit = 0; bit < 32; ++bit )
