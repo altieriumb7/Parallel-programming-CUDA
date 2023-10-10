@@ -19,13 +19,7 @@ int main() {
 
     sort_config.blockSize = dim3(sort_config.threads_per_block);
     sort_config.gridSize = dim3(sort_config.total_blocks);
-    lists_to_merge = ceil(get_n_list_to_merge(N, sort_config.partition_size, sort_config.total_threads) / (float)2);
-
-    /*
-        The number of blocks needed during the merging phase
-    */
-    blocks_involved_in_merging = ceil(lists_to_merge / (float)sort_config.threads_per_block);
-    const size_t size_blocks = blocks_involved_in_merging * sort_config.threads_per_block * sizeof(unsigned long);
+    
     int arr[5000];
     srand(time(NULL));
     for (int i = 0; i < 5000; i++) {
@@ -148,7 +142,7 @@ int main() {
     unsigned int *device_array2;
     cudaMalloc(&device_array2, 1000 * sizeof(unsigned int));
     cudaMemcpy(device_array2, host_array2, 1000 * sizeof(unsigned int), cudaMemcpyHostToDevice);
-
+    unsigned int size_blocks=sort_config.threads_per_block;
     quickSortIterative(device_array2, 0, 1000 - 1,size_blocks);
 
     cudaMemcpy(host_array2, device_array2, 1000 * sizeof(unsigned int), cudaMemcpyDeviceToHost);
