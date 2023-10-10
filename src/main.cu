@@ -86,15 +86,13 @@ int main() {
     blocksPerGrid.z = 1;
 
     // Create an array of numbers (you can replace this with your input)
-    long data[] = {8, 3, 1, 9, 1, 2, 7, 5, 9, 3, 6, 4, 2, 0, 2, 5};
+    long data[5000];
     long size_data = sizeof(data) / sizeof(data[0]);
 
     // Print unsorted data
-    printf("Unsorted data: ");
-    for (int i = 0; i < size_data; i++) {
-        printf("%ld ", data[i]);
+    for (int i = 0; i < 5000; i++) {
+        data[i] = rand() % 100000;
     }
-    printf("\n");
 
     // Sort the data using mergesort
     mergesort(data, size_data, threadsPerBlock, blocksPerGrid);
