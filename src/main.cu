@@ -107,8 +107,7 @@ int main() {
     }
     //
         // Your provided mergesort code with checks
-    dim3 threadsPerBlock;
-    dim3 blocksPerGrid;
+    
 
     threadsPerBlock.x = 32;
     threadsPerBlock.y = 1;
@@ -119,8 +118,7 @@ int main() {
     blocksPerGrid.z = 1;
 
     // Create an array of numbers (you can replace this with your input)
-    long data[5000];
-    long size_data = sizeof(data) / sizeof(data[0]);
+    size_data = sizeof(data) / sizeof(data[0]);
 
     // Print unsorted data
     for (int i = 0; i < 5000; i++) {
