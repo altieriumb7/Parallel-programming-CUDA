@@ -128,7 +128,7 @@ __device__ void gpu_bottomUpMerge(long* source, long* dest, long start, long mid
 }
 
 // GPU mergesort kernel
-__global__ void gpu_mergesort(long* source, long* dest, long size, long width, long slices, dim3* threads, dim3* blocks) {
+__global__ void gpu_mergesort_shared(long* source, long* dest, long size, long width, long slices, dim3* threads, dim3* blocks) {
     unsigned int idx = getIdx(threads, blocks);
     long start = width * idx * slices;
     long middle, end;
@@ -182,7 +182,7 @@ void mergesort_shared(long* data, long size, dim3 threadsPerBlock, dim3 blocksPe
     for (long width = 2; width < (size << 1); width <<= 1) {
         long slices = size / (nThreads * width) + 1;
 
-        gpu_mergesort<<<blocksPerGrid, threadsPerBlock>>>(A, B, size, width, slices, D_threads, D_blocks);
+        gpu_mergesort_shared<<<blocksPerGrid, threadsPerBlock>>>(A, B, size, width, slices, D_threads, D_blocks);
 
         A = A == D_data ? D_swp : D_data;
         B = B == D_data ? D_swp : D_data;
