@@ -70,7 +70,10 @@ int main() {
     } else {
         printf("Array 'a' is not sorted.\n");
     }
+    sort_config = determine_config(5000);
 
+    sort_config.blockSize = dim3(sort_config.threads_per_block);
+    sort_config.gridSize = dim3(sort_config.total_blocks);
     // Sort array b using radix sort
     unsigned int b[1000];
     srand(time(NULL));
