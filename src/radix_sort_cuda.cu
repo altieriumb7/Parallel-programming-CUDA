@@ -147,34 +147,33 @@ __device__ int plus_scan(unsigned int *x, unsigned int *shared_mem)
         __syncthreads();
     }
 
-    if (shared_mem)
+   
+    // Copy the inclusive scan results to shared memory
+    shared_mem[i] = x[i];
+    __syncthreads();
+
+    // Perform a block-level exclusive scan on shared memory
+    for (offset = 1; offset < n; offset *= 2)
     {
-        // Copy the inclusive scan results to shared memory
-        shared_mem[i] = x[i];
+        unsigned int t;
+
+        if (i >= offset)
+            t = shared_mem[i - offset];
+
         __syncthreads();
 
-        // Perform a block-level exclusive scan on shared memory
-        for (offset = 1; offset < n; offset *= 2)
-        {
-            unsigned int t;
+        if (i >= offset)
+            shared_mem[i] = t + shared_mem[i];
 
-            if (i >= offset)
-                t = shared_mem[i - offset];
-
-            __syncthreads();
-
-            if (i >= offset)
-                shared_mem[i] = t + shared_mem[i];
-
-            __syncthreads();
-        }
-
-        // Calculate the total sum from the last element of shared memory
-        int total_sum = shared_mem[n - 1];
-
-        // Add the total sum to each element in the block
-        x[i] += total_sum;
+        __syncthreads();
     }
+
+    // Calculate the total sum from the last element of shared memory
+    int total_sum = shared_mem[n - 1];
+
+    // Add the total sum to each element in the block
+    x[i] += total_sum;
+
 
     return x[i];
 }
