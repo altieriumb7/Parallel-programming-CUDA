@@ -49,7 +49,7 @@ __global__ void partition (int *arr, int *arr_l, int *arr_h, int n)
       }
 }
  
-void quickSortIterative (int arr[], int l, int h,int d_size)
+void quickSortIterative (int arr[], int l, int h)
 {
     int lstack[ h - l + 1 ], hstack[ h - l + 1];
  
