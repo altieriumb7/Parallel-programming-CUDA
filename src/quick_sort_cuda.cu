@@ -90,7 +90,11 @@ void quickSortIterative (int arr[], int l, int h)
 }
  
 //-----------------------------------------------------------------
-
+void atomicAdd(int* atomic, int val) {
+    pthread_mutex_lock(&atomic->mutex);
+    atomic->value += val;
+    pthread_mutex_unlock(&atomic->mutex);
+}
 
 __global__ void partition_shared(int *arr, int *arr_l, int *arr_h, int n,int dsize) {
     __shared__ int s_data[SHARED_MEM_SIZE]; // Shared memory for one block (adjust size as needed)
@@ -171,7 +175,7 @@ void quickSortIterative_shared(int arr[], int l, int h,int d_size) {
         int answer;
         cudaMemcpyFromSymbol(&answer, d_size, sizeof(int), 0, cudaMemcpyDeviceToHost);
 
-        n_t = min(answer, 1024);
+        n_t = min(answer, SHARED_MEM_SIZE);
         n_b = (answer + n_t - 1) / n_t; // Calculate the number of blocks
         n_i = answer;
 
