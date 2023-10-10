@@ -17,7 +17,10 @@
 
 int main() {
     // Your existing code for sorting 'arr' goes here
+    ParallelSortConfig sort_config = determine_config(5000);
 
+    sort_config.blockSize = dim3(sort_config.threads_per_block);
+    sort_config.gridSize = dim3(sort_config.total_blocks);
     int arr[5000];
     srand(time(NULL));
     for (int i = 0; i < 5000; i++) {
@@ -68,19 +71,34 @@ int main() {
     } else {
         printf("Array 'a' is not sorted.\n");
     }
+    //------------------------------------------------------------------------------------
+    unsigned int b[1000];
+    srand(time(NULL));
+    for (int i = 0; i < 1000; i++) {
+        b[i] = rand() % 1000;
+    }
 
-    // Your provided mergesort code with checks
+    unsigned int *dev_b;
+    cudaMalloc(&dev_b, size_a * sizeof(unsigned int));
+    cudaMemcpy(dev_b, a, size_a * sizeof(unsigned int), cudaMemcpyHostToDevice);
+    radix_sort_shared<<<1, size_a>>>(dev_b);
+    cudaMemcpy(b, dev_b, size_a * sizeof(unsigned int), cudaMemcpyDeviceToHost);
 
-    dim3 threadsPerBlock;
-    dim3 blocksPerGrid;
+    sorted = 1; // Assume it's sorted
+    for (int i = 1; i < size_a; i++) {
+        if (b[i - 1] > b[i]) {
+            sorted = 0; // Array is not sorted
+            break;
+        }
+    }
 
-    threadsPerBlock.x = 32;
-    threadsPerBlock.y = 1;
-    threadsPerBlock.z = 1;
+    if (sorted) {
+        printf("Array 'b' is sorted.\n");
+    } else {
+        printf("Array 'b' is not sorted.\n");
+    }
 
-    blocksPerGrid.x = 8;
-    blocksPerGrid.y = 1;
-    blocksPerGrid.z = 1;
+    //------------------------------------------------------------------------------------
 
     // Create an array of numbers (you can replace this with your input)
     long data[5000];
@@ -92,7 +110,7 @@ int main() {
     }
 
     // Sort the data using mergesort
-    mergesort(data, size_data, threadsPerBlock, blocksPerGrid);
+    mergesort(data, size_data, sort_config.threads_per_block, sort_config.total_blocks);
 
     
 
@@ -104,19 +122,10 @@ int main() {
     }
     //
         // Your provided mergesort code with checks
-    ParallelSortConfig sort_config = determine_config(5000);
-
-    sort_config.blockSize = dim3(sort_config.threads_per_block);
-    sort_config.gridSize = dim3(sort_config.total_blocks);
+    
 
     long data2[5000];
-    threadsPerBlock.x = 32;
-    threadsPerBlock.y = 1;
-    threadsPerBlock.z = 1;
-
-    blocksPerGrid.x = 8;
-    blocksPerGrid.y = 1;
-    blocksPerGrid.z = 1;
+    
 
     // Create an array of numbers (you can replace this with your input)
     size_data = sizeof(data2) / sizeof(data2[0]);
@@ -137,10 +146,6 @@ int main() {
     } else {
         printf("Array is not sorted.\n");
     }
-    printf("Sorted data: ");
-    for (int i = 0; i < size_data; i++) {
-        printf("%ld ", data2[i]);
-    }
-    printf("\n");
+   
 
 }
