@@ -9,9 +9,7 @@
 #include "../lib/utilsParallelSort.cuh"
 
 
-#include <iostream>
-#include <stdlib.h>
-#include "mergesort.cuh"
+
 #include <cuda_runtime.h>
 
 using namespace std;

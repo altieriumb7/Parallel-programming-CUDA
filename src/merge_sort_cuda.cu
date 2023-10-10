@@ -3,7 +3,9 @@
 #include "../lib/constants.cuh"
 #include "../lib/merge_sort.cuh"
 
-
+__device__ float min(float a, float b) {
+    return (a < b) ? a : b;
+}
 void mergesort(float* data, dim3 threadsPerBlock, dim3 blocksPerGrid) 
 {
     float* D_data;
