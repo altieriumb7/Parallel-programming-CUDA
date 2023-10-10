@@ -29,7 +29,6 @@
         cudaMemcpyToSymbol(ddata, hdata, arraySize * sizeof(unsigned int));
 
         // Execution time measurement: start the clock
-        struct timeval t1, t2;
         t_start = get_time();
 
         parallelRadix<<<1, WSIZE>>>(ddata);
@@ -39,7 +38,7 @@
         t_stop = get_time();
 
         // Calculate the execution time
-        long long duration = t_start-t_stop
+        long long duration = t_start-t_stop;
         
         totalTime += duration;
 
