@@ -1,5 +1,28 @@
 #include "../lib/utils.cuh"
 
+void gpuAssert(cudaError_t code, const char *file, int line, bool abort)
+{
+    if (code != cudaSuccess)
+    {
+        fprintf(stderr, "GPUerror: %s\nCode: %d\nFile: %s\nLine: %d\n", cudaGetErrorString(code), code, file, line);
+        if (abort)
+            exit(code);
+    }
+}
+
+__device__ void gpuAssert_gpu(cudaError_t code, const char *file, int line, bool abort)
+{
+    if (code != cudaSuccess)
+    {
+        const char *errorString = cudaGetErrorString(code);
+
+        printf("GPUerror: %s\nCode: %d\nFile: %s\nLine: %d\n", errorString, code, file, line);
+
+        if (abort)
+            asm("trap;");
+    }
+}
+
 double get_time(void)
 {
     struct timespec ts;
@@ -7,7 +30,7 @@ double get_time(void)
     return (ts.tv_sec + (double)ts.tv_nsec / 1e9);
 }
 
-void init_array(unsigned long *data, const unsigned long long N)
+void init_array(unsigned short *data, const unsigned long long N)
 {
     srand(42); // Ensure the determinism
 
@@ -18,7 +41,7 @@ void init_array(unsigned long *data, const unsigned long long N)
     }
 }
 
-__host__ void print_array(const unsigned long *data, const unsigned long long N)
+__host__ void print_array(const unsigned short *data, const unsigned long long N)
 {
     for (unsigned long long i = 0; i < N; i++)
     {
@@ -27,7 +50,7 @@ __host__ void print_array(const unsigned long *data, const unsigned long long N)
     printf("\n");
 }
 
-bool is_sorted(unsigned long *result, const unsigned long long N)
+bool is_sorted(unsigned short *result, const unsigned long long N)
 {
     for (unsigned long long i = 0; i < N - 1; i++)
     {
@@ -44,7 +67,7 @@ bool is_power_of_two(const unsigned long x)
     return (x & (x - 1)) == 0;
 }
 
-__host__ __device__ void get_max(unsigned long *data, const unsigned long long N, unsigned long *max)
+__host__ __device__ void get_max(unsigned short *data, const unsigned long long N, unsigned short *max)
 {
     *max = 0;
     for (unsigned long long i = 0; i < N; i++)
