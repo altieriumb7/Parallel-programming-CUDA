@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
         printf("Error in sorting quick sort global mem");
     }
     zero_array(data, N);
-    //----------------------------------------------------------------------------merge sort parallel shared memory ------------------------------------------------
+    //----------------------------------------------------------------------------merge sort parallel global memory ------------------------------------------------
 
     fill_array(data, N);
     cudaMemcpy(dev_data, data, size_array, cudaMemcpyHostToDevice);
@@ -111,7 +111,9 @@ int main(int argc, char *argv[]) {
     cudaDeviceSynchronize();
 
     t_start = time_now();
-    mergeSort_p(dev_data,N, config.threads_per_block, config.total_blocks);
+    //mergeSort_p(dev_data,N, config.threads_per_block, config.total_blocks);
+    radix_sort<<<1, size_a>>>(dev_data);
+
     t_stop = time_now();
     cudaPeekAtLastError();
     cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost);
@@ -119,10 +121,10 @@ int main(int argc, char *argv[]) {
     sorting_time[3] = t_stop - t_start;
     
     if (sorted[3]){
-        printf("Sorted properly using Merge Sorting Parallel shared mem.");
+        printf("Sorted properly using Merge Sorting Parallel global mem.");
         printf("Time for sorting: %lf\n", sorting_time[3],' ms\n');
     }else{
-        printf("Error in sorting merge sort shared mem");
+        printf("Error in sorting merge sort global mem");
     }
     zero_array(data, N);
     
