@@ -1,7 +1,7 @@
 #include "../lib/radix_sort.cuh"
 
 // Kernel for performing radix sort
-__global__ void radixSort(unsigned int *values)
+__global__ void radixSort(int *values)
 {
     int bit;
     // Iterate through each bit (0 to 31)
@@ -14,7 +14,7 @@ __global__ void radixSort(unsigned int *values)
 }
 
 // Device function for inclusive scan (prefix sum)
-__device__ int inclusiveScan(unsigned int *x)
+__device__ int inclusiveScan(int *x)
 {
     unsigned int i = threadIdx.x;
     unsigned int n = blockDim.x;
@@ -38,11 +38,11 @@ __device__ int inclusiveScan(unsigned int *x)
 }
 
 // Device function to partition values based on a specific bit
-__device__ void partitionByBit(unsigned int *values, unsigned int bit)
+__device__ void partitionByBit(int *values, int bit)
 {
     unsigned int i = threadIdx.x;
     unsigned int size = blockDim.x;
-    unsigned int x_i = values[i];
+    int x_i = values[i];
     unsigned int p_i = (x_i >> bit) & 1; // Extract the bit at the given position
     values[i] = p_i;
     __syncthreads();
@@ -61,11 +61,11 @@ __device__ void partitionByBit(unsigned int *values, unsigned int bit)
 }
 
 // Kernel for performing radix sort using shared memory
-__global__ void radixSortShared(unsigned int *values)
+__global__ void radixSortShared(int *values)
 {
     int bit;
-    __shared__ unsigned int sharedValues[SHARED_MEM_SIZE];
-    unsigned int* sValues = sharedValues;
+    __shared__ int sharedValues[SHARED_MEM_SIZE];
+    int* sValues = sharedValues;
 
     // Iterate through each bit (0 to 31)
     for (bit = 0; bit < 32; ++bit)
@@ -81,7 +81,7 @@ __global__ void radixSortShared(unsigned int *values)
 }
 
 // Device function for inclusive scan (prefix sum) using shared memory
-__device__ int inclusiveScanShared(unsigned int *x)
+__device__ int inclusiveScanShared(int *x)
 {
     unsigned int i = threadIdx.x;
     unsigned int n = blockDim.x;
@@ -105,11 +105,11 @@ __device__ int inclusiveScanShared(unsigned int *x)
 }
 
 // Device function to partition values based on a specific bit using shared memory
-__device__ void partitionByBitShared(unsigned int *values, unsigned int bit)
+__device__ void partitionByBitShared(int *values, int bit)
 {
     unsigned int i = threadIdx.x;
     unsigned int size = blockDim.x;
-    unsigned int x_i = values[i];
+    int x_i = values[i];
     unsigned int p_i = (x_i >> bit) & 1; // Extract the bit at the given position
     values[i] = p_i;
     __syncthreads();
