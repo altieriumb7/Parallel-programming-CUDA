@@ -6,12 +6,11 @@
 #include <cuda_runtime.h>
 #include <time.h>
 #include "../lib/constants.cuh"
+__global__ void partition(unsigned short *d_data, unsigned short *d_low, unsigned short *d_high, unsigned short d_size);
 
+void quick_sort_p(unsigned short d_array[], unsigned short d_start, unsigned short d_end, unsigned short numBlocks, unsigned short numThreads);
 
-__global__ void partition(unsigned int *d_data, unsigned int *d_low, unsigned int *d_high, unsigned int d_size);
+__global__ void partition_shared(unsigned short *d_array, unsigned short *d_low, unsigned short *d_high, unsigned short d_size);
 
-void quick_sort_p(unsigned int d_array[], unsigned int d_start, unsigned int d_end,unsigned int numBlocks, unsigned int numThreads);
+void quick_sort_p_shared(unsigned short d_array[], unsigned short d_start, unsigned short d_end, unsigned short numBlocks, unsigned short numThreads);
 
-__global__ void partition_shared(unsigned int *d_array, unsigned int *d_low, unsigned int *d_high, unsigned int d_size);
-
-void quick_sort_p_shared(unsigned int d_array[], unsigned int d_start, unsigned int d_end,unsigned int numBlocks, unsigned int numThreads);

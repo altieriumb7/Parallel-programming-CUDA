@@ -15,7 +15,7 @@
 #define MAXBLOCKS 65535
 #define PARTITION_SIZE 4096
 #define MIN_VALUE 0
-#define MAX_VALUE 4294967295
+#define MAX_VALUE 65535
 
 
 

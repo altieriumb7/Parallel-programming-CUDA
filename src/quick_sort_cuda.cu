@@ -1,24 +1,24 @@
 #include "../lib/quick_sort.cuh"
 
 // Device variable to store the partition size
-__device__ unsigned int d_partitionSize;
+__device__ unsigned short d_partitionSize;
 
 // GPU kernel for partitioning data
-__global__ void partition(unsigned int *d_data, unsigned int *d_low, unsigned int *d_high, unsigned int d_size)
+__global__ void partition(unsigned short *d_data, unsigned short *d_low, unsigned short *d_high, unsigned short d_size)
 {
-    unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    unsigned short idx = blockIdx.x * blockDim.x + threadIdx.x;
     d_partitionSize = 0;  // Initialize partition size to 0
     __syncthreads();
 
     if (idx < d_size)
     {
-        unsigned int high = d_high[idx];
-        unsigned int low = d_low[idx];
-        unsigned int pivot = d_data[high];
-        unsigned int i = (low - 1);
-        unsigned int temp;
+        unsigned short high = d_high[idx];
+        unsigned short low = d_low[idx];
+        unsigned short pivot = d_data[high];
+        unsigned short i = (low - 1);
+        unsigned short temp;
 
-        for (unsigned int j = low; j <= high - 1; j++)
+        for (unsigned short j = low; j <= high - 1; j++)
         {
             if (d_data[j] <= pivot)
             {
@@ -32,17 +32,17 @@ __global__ void partition(unsigned int *d_data, unsigned int *d_low, unsigned in
         temp = d_data[i + 1];
         d_data[i + 1] = d_data[high];
         d_data[high] = temp;
-        unsigned int partitionPoint = (i + 1);
+        unsigned short partitionPoint = (i + 1);
 
         if (partitionPoint - 1 > low)
         {
-            unsigned int ind = atomicAdd(&d_partitionSize, 1);
+            unsigned short ind = atomicAdd(&d_partitionSize, 1);
             d_low[ind] = low;
             d_high[ind] = partitionPoint - 1;
         }
         if (partitionPoint + 1 < high)
         {
-            unsigned int ind = atomicAdd(&d_partitionSize, 1);
+            unsigned short ind = atomicAdd(&d_partitionSize, 1);
             d_low[ind] = partitionPoint + 1;
             d_high[ind] = high;
         }
@@ -50,34 +50,34 @@ __global__ void partition(unsigned int *d_data, unsigned int *d_low, unsigned in
 }
 
 // Host function for iterative quicksort on the GPU
-void quick_sort_p(unsigned int d_array[], unsigned int d_start, unsigned int d_end,unsigned int numBlocks, unsigned int numThreads)
+void quick_sort_p(unsigned short d_array[], unsigned short d_start, unsigned short d_end,unsigned short numBlocks, unsigned short numThreads)
 {
-    unsigned int lowStack[d_end - d_start + 1], highStack[d_end - d_start + 1];
+    unsigned short lowStack[d_end - d_start + 1], highStack[d_end - d_start + 1];
 
     int top = -1;
-    unsigned int *d_d, *d_low, *d_high;
+    unsigned short *d_d, *d_low, *d_high;
 
     lowStack[++top] = d_start;
     highStack[top] = d_end;
 
-    cudaMalloc(&d_d, (d_end - d_start + 1) * sizeof(unsigned int));
-    cudaMemcpy(d_d, d_array, (d_end - d_start + 1) * sizeof(unsigned int), cudaMemcpyHostToDevice);
+    cudaMalloc(&d_d, (d_end - d_start + 1) * sizeof(unsigned short));
+    cudaMemcpy(d_d, d_array, (d_end - d_start + 1) * sizeof(unsigned short), cudaMemcpyHostToDevice);
 
-    cudaMalloc(&d_low, (d_end - d_start + 1) * sizeof(unsigned int));
-    cudaMemcpy(d_low, lowStack, (d_end - d_start + 1) * sizeof(unsigned int), cudaMemcpyHostToDevice);
+    cudaMalloc(&d_low, (d_end - d_start + 1) * sizeof(unsigned short));
+    cudaMemcpy(d_low, lowStack, (d_end - d_start + 1) * sizeof(unsigned short), cudaMemcpyHostToDevice);
 
-    cudaMalloc(&d_high, (d_end - d_start + 1) * sizeof(unsigned int));
-    cudaMemcpy(d_high, highStack, (d_end - d_start + 1) * sizeof(unsigned int), cudaMemcpyHostToDevice);
+    cudaMalloc(&d_high, (d_end - d_start + 1) * sizeof(unsigned short));
+    cudaMemcpy(d_high, highStack, (d_end - d_start + 1) * sizeof(unsigned short), cudaMemcpyHostToDevice);
 
     numThreads = 1;
     numBlocks = 1;
-    unsigned int numIterations = 1;
+    unsigned short numIterations = 1;
 
     while (numIterations > 0)
     {
         partition<<<numBlocks, numThreads>>>(d_d, d_low, d_high, numIterations);
-        unsigned int partitionSize;
-        cudaMemcpyFromSymbol(&partitionSize, d_partitionSize, sizeof(unsigned int), 0, cudaMemcpyDeviceToHost);
+        unsigned short partitionSize;
+        cudaMemcpyFromSymbol(&partitionSize, d_partitionSize, sizeof(unsigned short), 0, cudaMemcpyDeviceToHost);
 
         if (partitionSize < 1024)
         {
@@ -89,19 +89,19 @@ void quick_sort_p(unsigned int d_array[], unsigned int d_start, unsigned int d_e
             numBlocks = partitionSize / numThreads + (partitionSize % numThreads == 0 ? 0 : 1);
         }
         numIterations = partitionSize;
-        cudaMemcpy(d_array, d_d, (d_end - d_start + 1) * sizeof(unsigned int), cudaMemcpyDeviceToHost);
+        cudaMemcpy(d_array, d_d, (d_end - d_start + 1) * sizeof(unsigned short), cudaMemcpyDeviceToHost);
     }
 }
 
 
 
 // Shared memory for the partition
-__shared__ unsigned int sharedArr[SHARED_MEM_SIZE];
+__shared__ unsigned short sharedArr[SHARED_MEM_SIZE];
 
 // GPU kernel for partitioning data using shared memory
-__global__ void partition_shared(unsigned int *d_array, unsigned int *d_low, unsigned int *d_high, unsigned int d_size)
+__global__ void partition_shared(unsigned short *d_array, unsigned short *d_low, unsigned short *d_high, unsigned short d_size)
 {
-    unsigned int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    unsigned short idx = blockIdx.x * blockDim.x + threadIdx.x;
     d_partitionSize = 0;
     __syncthreads();
 
@@ -111,13 +111,13 @@ __global__ void partition_shared(unsigned int *d_array, unsigned int *d_low, uns
         sharedArr[threadIdx.x] = d_array[idx];
         __syncthreads();
 
-        unsigned int high = d_high[idx];
-        unsigned int low = d_low[idx];
-        unsigned int pivot = sharedArr[threadIdx.x]; // Use shared memory
-        unsigned int i = (low - 1);
-        unsigned int temp;
+        unsigned short high = d_high[idx];
+        unsigned short low = d_low[idx];
+        unsigned short pivot = sharedArr[threadIdx.x]; // Use shared memory
+        unsigned short i = (low - 1);
+        unsigned short temp;
 
-        for (unsigned int j = low; j <= high - 1; j++)
+        for (unsigned short j = low; j <= high - 1; j++)
         {
             if (sharedArr[j - low] <= pivot) // Adjust for shared memory
             {
@@ -131,17 +131,17 @@ __global__ void partition_shared(unsigned int *d_array, unsigned int *d_low, uns
         temp = sharedArr[i + 1 - low]; // Adjust for shared memory
         sharedArr[i + 1 - low] = sharedArr[high - low]; // Adjust for shared memory
         sharedArr[high - low] = temp; // Adjust for shared memory
-        unsigned int partitionPoint = (i + 1);
+        unsigned short partitionPoint = (i + 1);
 
         if (partitionPoint - 1 > low)
         {
-            unsigned int ind = atomicAdd(&d_partitionSize, 1);
+            unsigned short ind = atomicAdd(&d_partitionSize, 1);
             d_low[ind] = low;
             d_high[ind] = partitionPoint - 1;
         }
         if (partitionPoint + 1 < high)
         {
-            unsigned int ind = atomicAdd(&d_partitionSize, 1);
+            unsigned short ind = atomicAdd(&d_partitionSize, 1);
             d_low[ind] = partitionPoint + 1;
             d_high[ind] = high;
         }
@@ -152,34 +152,34 @@ __global__ void partition_shared(unsigned int *d_array, unsigned int *d_low, uns
 }
 
 // Host function for iterative quicksort on the GPU using shared memory
-void quick_sort_p_shared(unsigned int d_array[], unsigned int d_start, unsigned int d_end, unsigned int numBlocks, unsigned int numThreads)
+void quick_sort_p_shared(unsigned short d_array[], unsigned short d_start, unsigned short d_end, unsigned short numBlocks, unsigned short numThreads)
 {
-    unsigned int lowStack[d_end - d_start + 1], highStack[d_end - d_start + 1];
+    unsigned short lowStack[d_end - d_start + 1], highStack[d_end - d_start + 1];
 
     int top = -1;
-    unsigned int *d_d, *d_low, *d_high;
+    unsigned short *d_d, *d_low, *d_high;
 
     lowStack[++top] = d_start;
     highStack[top] = d_end;
 
-    cudaMalloc(&d_d, (d_end - d_start + 1) * sizeof(unsigned int));
-    cudaMemcpy(d_d, d_array, (d_end - d_start + 1) * sizeof(unsigned int), cudaMemcpyHostToDevice);
+    cudaMalloc(&d_d, (d_end - d_start + 1) * sizeof(unsigned short));
+    cudaMemcpy(d_d, d_array, (d_end - d_start + 1) * sizeof(unsigned short), cudaMemcpyHostToDevice);
 
-    cudaMalloc(&d_low, (d_end - d_start + 1) * sizeof(unsigned int));
-    cudaMemcpy(d_low, lowStack, (d_end - d_start + 1) * sizeof(unsigned int), cudaMemcpyHostToDevice);
+    cudaMalloc(&d_low, (d_end - d_start + 1) * sizeof(unsigned short));
+    cudaMemcpy(d_low, lowStack, (d_end - d_start + 1) * sizeof(unsigned short), cudaMemcpyHostToDevice);
 
-    cudaMalloc(&d_high, (d_end - d_start + 1) * sizeof(unsigned int));
-    cudaMemcpy(d_high, highStack, (d_end - d_start + 1) * sizeof(unsigned int), cudaMemcpyHostToDevice);
+    cudaMalloc(&d_high, (d_end - d_start + 1) * sizeof(unsigned short));
+    cudaMemcpy(d_high, highStack, (d_end - d_start + 1) * sizeof(unsigned short), cudaMemcpyHostToDevice);
 
     numThreads = 1;
     numBlocks = 1;
-    unsigned int numIterations = 1;
+    unsigned short numIterations = 1;
 
     while (numIterations > 0)
     {
         partition_shared<<<numBlocks, numThreads>>>(d_d, d_low, d_high, numIterations);
-        unsigned int partitionSize;
-        cudaMemcpyFromSymbol(&partitionSize, d_partitionSize, sizeof(unsigned int), 0, cudaMemcpyDeviceToHost);
+        unsigned short partitionSize;
+        cudaMemcpyFromSymbol(&partitionSize, d_partitionSize, sizeof(unsigned short), 0, cudaMemcpyDeviceToHost);
 
         if (partitionSize < 1024)
         {
@@ -191,6 +191,6 @@ void quick_sort_p_shared(unsigned int d_array[], unsigned int d_start, unsigned 
             numBlocks = partitionSize / numThreads + (partitionSize % numThreads == 0 ? 0 : 1);
         }
         numIterations = partitionSize;
-        cudaMemcpy(d_array, d_d, (d_end - d_start + 1) * sizeof(unsigned int), cudaMemcpyDeviceToHost);
+        cudaMemcpy(d_array, d_d, (d_end - d_start + 1) * sizeof(unsigned short), cudaMemcpyDeviceToHost);
     }
 }
