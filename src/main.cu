@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
         printf("Error in sorting quick sort shared mem");
     }
    
-    
+    /*
     zero_array(data, N);
 
     //----------------------------------------------------------------------------quick sort parallel global memory ------------------------------------------------
@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
 
    
     //.------------------------------------------------------------------- 
-    /*
+    
     
     int *device_array2;
     cudaMalloc(&device_array2, 1000 * sizeof(int)); // Change the type here
