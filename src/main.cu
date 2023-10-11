@@ -15,7 +15,6 @@
 
 int main(int argc, char *argv[]) {
     bool sorted[6];
-    double elapsed_time[6];// 6 algorithms to test
     unsigned long long N = 1024;
     unsigned int *data, *dev_data;
     bool stream_inout = false;
@@ -53,10 +52,15 @@ int main(int argc, char *argv[]) {
     cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost);
     sorted[0]=is_sorted(data,N);
     sorting_time[0] = t_stop - t_start;
-    printf("Sorted Quick Sorting Parallel glob. mem.: %d\n", sorted[0]);
-    printf("Time for sorting: %lf\n", sorting_time[0]);
-    /*
-    bzero(data, size_array);
+    if (sorted[0]==true){
+        printf("Sorted Quick Sorting Parallel glob. mem.: %d\n", sorted[0]);
+        printf("Time for sorting: %lf\n", sorting_time[0],' ms\n');
+    }else{
+        printf("Error in sorting quick sort shared mem");
+    }
+   
+    
+    memset(data, 0, size_array);
 
     //----------------------------------------------------------------------------quick sort parallel global memory ------------------------------------------------
     fill_array(data, N);
@@ -70,18 +74,19 @@ int main(int argc, char *argv[]) {
     cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost);
     sorted[1]=is_sorted(data,N);
     sorting_time[1] = t_stop - t_start;
-    bzero(data, size_array);
-
-    printf("Sorted Quick Sorting Parallel glob. mem.: %d\n", sorted[0]);
-    printf("Time for sorting: %lf\n", sorting_time[0]);
-
-    printf("Sorted Quick Sorting Parallel shared mem.: %d\n", sorted[1]);
-    printf("Time for sorting: %lf\n", sorting_time[1]);
+    
+    if (sorted[1]==true){
+        printf("Sorted Quick Sorting Parallel glob. mem.: %d\n", sorted[1]);
+        printf("Time for sorting: %lf\n", sorting_time[1],' ms\n');
+    }else{
+        printf("Error in sorting quick sort shared mem");
+    }
+    memset(data, 0, size_array);
 
 
    
     //.------------------------------------------------------------------- 
-
+    /*
     
     int *device_array2;
     cudaMalloc(&device_array2, 1000 * sizeof(int)); // Change the type here
