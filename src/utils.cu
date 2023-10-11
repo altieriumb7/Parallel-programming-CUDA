@@ -13,6 +13,14 @@ void zero_array(unsigned int *data, const unsigned long long N){
         data[i] = 0;
     }
 }
+
+void print_array(unsigned int* array, unsigned long long size) {
+    for (unsigned long long i = 0; i < size; i++) {
+        printf("%u ", array[i]); // Assuming 'unsigned int' elements
+    }
+    printf("\n");
+}
+
 // Function to initialize an array with random values within a given range
 void fill_array(unsigned int *data, const unsigned long long N)
 {

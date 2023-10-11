@@ -10,7 +10,7 @@
 #include "../lib/utils.cuh"
 
 
-
+void print_array(unsigned int* array, unsigned long long size);
 double time_now(void);
 void zero_array(unsigned int *data, const unsigned long long N);
 

@@ -58,6 +58,8 @@ int main(int argc, char *argv[]) {
     }else{
         printf("Error in sorting quick sort shared mem");
     }
+    print_array(data, size);
+
    
     /*
     zero_array(data, N);
