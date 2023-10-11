@@ -14,10 +14,7 @@
 #include "../lib/utils_conf.cuh"
 
 int main(int argc, char *argv[]) {
-    // Your existing code for sorting 'arr' goes here
-    unsigned long long N = 512;
     bool sorted[6];
-
     double elapsed_time[6];// 6 algorithms to test
     unsigned long long N = 1024;
     unsigned int *data, *dev_data;
@@ -42,7 +39,7 @@ int main(int argc, char *argv[]) {
     const size_t size_array = N * sizeof(unsigned int);
 
     data = (unsigned int *)malloc(size_array);
-    cudaHandleError(cudaMalloc((void **)&dev_data, size_array));
+    cudaMalloc((void **)&dev_data, size_array);
     
     //----------------------------------------------------------------------------quick sort parallel global memory ------------------------------------------------
     fill_array(data, N);
