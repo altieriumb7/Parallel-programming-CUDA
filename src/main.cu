@@ -43,28 +43,28 @@ int main(int argc, char *argv[]) {
     
     //----------------------------------------------------------------------------quick sort parallel global memory ------------------------------------------------
     fill_array(data, N);
-    cudaHandleError(cudaMemcpy(dev_data, data, size_array, cudaMemcpyHostToDevice));
+    cudaMemcpy(dev_data, data, size_array, cudaMemcpyHostToDevice);
     cudaDeviceSynchronize();
 
     t_start = time_now();
     quick_sort_p_shared(dev_data, 0, N - 1);
     t_stop = time_now();
-    cudaHandleError(cudaPeekAtLastError());
-    cudaHandleError(cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost));
+    cudaPeekAtLastError();
+    cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost);
     sorted[0]=is_sorted(data,N);
     sorting_time[0] = t_stop - t_start;
     bzero(data, size_array);
 
     //----------------------------------------------------------------------------quick sort parallel shared memory ------------------------------------------------
     fill_array(data, N);
-    cudaHandleError(cudaMemcpy(dev_data, data, size_array, cudaMemcpyHostToDevice));
+    cudaMemcpy(dev_data, data, size_array, cudaMemcpyHostToDevice);
     cudaDeviceSynchronize();
 
     t_start = time_now();
     quick_sort_p(dev_data, 0, N - 1);
     t_stop = time_now();
-    cudaHandleError(cudaPeekAtLastError());
-    cudaHandleError(cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost));
+    cudaPeekAtLastError();
+    cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost);
     sorted[1]=is_sorted(data,N);
     sorting_time[1] = t_stop - t_start;
     bzero(data, size_array);
