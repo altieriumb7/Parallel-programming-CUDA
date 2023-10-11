@@ -32,17 +32,17 @@ __global__ void partition(unsigned short *d_data, unsigned short *d_low, unsigne
         temp = d_data[i + 1];
         d_data[i + 1] = d_data[high];
         d_data[high] = temp;
-        unsigned short partitionPoint = (i + 1);
+        int partitionPoint = (i + 1);
 
         if (partitionPoint - 1 > low)
         {
-            unsigned short ind = atomicAdd(&d_partitionSize, 1);
+            int ind = atomicAdd(&d_partitionSize, 1);
             d_low[ind] = low;
             d_high[ind] = partitionPoint - 1;
         }
         if (partitionPoint + 1 < high)
         {
-            unsigned short ind = atomicAdd(&d_partitionSize, 1);
+            int ind = atomicAdd(&d_partitionSize, 1);
             d_low[ind] = partitionPoint + 1;
             d_high[ind] = high;
         }
@@ -69,8 +69,6 @@ void quick_sort_p(unsigned short d_array[], unsigned short d_start, unsigned sho
     cudaMalloc(&d_high, (d_end - d_start + 1) * sizeof(unsigned short));
     cudaMemcpy(d_high, highStack, (d_end - d_start + 1) * sizeof(unsigned short), cudaMemcpyHostToDevice);
 
-    numThreads = 1;
-    numBlocks = 1;
     unsigned short numIterations = 1;
 
     while (numIterations > 0)
@@ -131,17 +129,17 @@ __global__ void partition_shared(unsigned short *d_array, unsigned short *d_low,
         temp = sharedArr[i + 1 - low]; // Adjust for shared memory
         sharedArr[i + 1 - low] = sharedArr[high - low]; // Adjust for shared memory
         sharedArr[high - low] = temp; // Adjust for shared memory
-        unsigned short partitionPoint = (i + 1);
+        int partitionPoint = (i + 1);
 
         if (partitionPoint - 1 > low)
         {
-            unsigned short ind = atomicAdd(&d_partitionSize, 1);
+            int ind = atomicAdd(&d_partitionSize, 1);
             d_low[ind] = low;
             d_high[ind] = partitionPoint - 1;
         }
         if (partitionPoint + 1 < high)
         {
-            unsigned short ind = atomicAdd(&d_partitionSize, 1);
+            int ind = atomicAdd(&d_partitionSize, 1);
             d_low[ind] = partitionPoint + 1;
             d_high[ind] = high;
         }
@@ -171,8 +169,7 @@ void quick_sort_p_shared(unsigned short d_array[], unsigned short d_start, unsig
     cudaMalloc(&d_high, (d_end - d_start + 1) * sizeof(unsigned short));
     cudaMemcpy(d_high, highStack, (d_end - d_start + 1) * sizeof(unsigned short), cudaMemcpyHostToDevice);
 
-    numThreads = 1;
-    numBlocks = 1;
+    
     unsigned short numIterations = 1;
 
     while (numIterations > 0)
