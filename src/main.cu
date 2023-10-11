@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
     data = (unsigned int *)malloc(size_array);
     cudaMalloc((void **)&dev_data, size_array);
     
-    //----------------------------------------------------------------------------quick sort parallel global memory ------------------------------------------------
+    //----------------------------------------------------------------------------quick sort parallel shared memory ------------------------------------------------
     fill_array(data, N);
     cudaMemcpy(dev_data, data, size_array, cudaMemcpyHostToDevice);
     cudaDeviceSynchronize();
@@ -53,9 +53,12 @@ int main(int argc, char *argv[]) {
     cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost);
     sorted[0]=is_sorted(data,N);
     sorting_time[0] = t_stop - t_start;
+    printf("Sorted Quick Sorting Parallel glob. mem.: %d\n", sorted[0]);
+    printf("Time for sorting: %lf\n", sorting_time[0]);
+    /*
     bzero(data, size_array);
 
-    //----------------------------------------------------------------------------quick sort parallel shared memory ------------------------------------------------
+    //----------------------------------------------------------------------------quick sort parallel global memory ------------------------------------------------
     fill_array(data, N);
     cudaMemcpy(dev_data, data, size_array, cudaMemcpyHostToDevice);
     cudaDeviceSynchronize();
@@ -79,7 +82,7 @@ int main(int argc, char *argv[]) {
    
     //.------------------------------------------------------------------- 
 
-    /*
+    
     int *device_array2;
     cudaMalloc(&device_array2, 1000 * sizeof(int)); // Change the type here
     cudaMemcpy(device_array2, host_array2, 1000 * sizeof(int), cudaMemcpyHostToDevice);
