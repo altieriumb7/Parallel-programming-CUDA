@@ -1,10 +1,10 @@
 #include "../lib/merge_sort.cuh"
 
 // GPU helper function for bottom-up merge
-__device__ void gpuBottomUpMerge(int* src, int* dest, int start, int middle, int end) {
-    int i = start;
-    int j = middle;
-    for (int k = start; k < end; k++) {
+__device__ void gpuBottomUpMerge(int* src, int* dest, unsigned long long  start, unsigned long long  middle, unsigned long long  end) {
+    unsigned long long  i = start;
+    unsigned long long  j = middle;
+    for (unsigned long long  k = start; k < end; k++) {
         if (i < middle && (j >= end || src[i] < src[j])) {
             dest[k] = src[i];
             i++;
@@ -15,10 +15,10 @@ __device__ void gpuBottomUpMerge(int* src, int* dest, int start, int middle, int
     }
 }
 
-__device__ int getThreadIndex(dim3* threads, dim3* blocks) {
-    int threadIndex = threadIdx.x;
-    int threadMultiplier = threads->x;
-    int blockMultiplier = threadMultiplier * threads->y;
+__device__ unsigned long long getThreadIndex(dim3* threads, dim3* blocks) {
+    unsigned long long threadIndex = threadIdx.x;
+    unsigned long long threadMultiplier = threads->x;
+    unsigned long long blockMultiplier = threadMultiplier * threads->y;
 
     return threadIndex +
            threadIdx.y * threadMultiplier +
@@ -29,10 +29,10 @@ __device__ int getThreadIndex(dim3* threads, dim3* blocks) {
 }
 
 // GPU mergesort kernel
-__global__ void gpuMergeSort(int* source, int* destination, unsigned long long size, int width, int slices, dim3* threads, dim3* blocks) {
-    int idx = getThreadIndex(threads, blocks);
-    int start = width * idx * slices;
-    int middle, end;
+__global__ void gpuMergeSort(int* source, int* destination, unsigned long long size, unsigned long long  width, unsigned long long  slices, dim3* threads, dim3* blocks) {
+    unsigned long long  idx = getThreadIndex(threads, blocks);
+    unsigned long long  start = width * idx * slices;
+    unsigned long long  middle, end;
 
     for (int slice = 0; slice < slices; slice++) {
         if (start >= size)
@@ -99,11 +99,11 @@ void mergeSort(int* data, unsigned long long size, dim3 threadsPerBlock, dim3 bl
 }
 
 // GPU helper function for bottom-up merge
-__device__ void gpuBottomUpMergeShared(int* source, int* dest, int start, int middle, int end, int* sharedMem) {
-    int i = start;
-    int j = middle;
-    int k = start + threadIdx.x;  // Calculate the starting index for this thread in shared memory
-    int limit = start + blockDim.x; // Calculate the limit for the loop
+__device__ void gpuBottomUpMergeShared(int* source, int* dest, long long start, long long  middle, long long  end, int* sharedMem) {
+    long long  i = start;
+    long long  j = middle;
+    long long  k = start + threadIdx.x;  // Calculate the starting index for this thread in shared memory
+    long long  limit = start + blockDim.x; // Calculate the limit for the loop
 
     while (k < end) {
         if (i < middle && (j >= end || source[i] <= source[j])) {
@@ -125,10 +125,10 @@ __device__ void gpuBottomUpMergeShared(int* source, int* dest, int start, int mi
 }
 
 // GPU mergesort kernel
-__global__ void gpuMergeSortShared(int* source, int* dest, unsigned long long size, int width, int slices, dim3* threads, dim3* blocks) {
-    int idx = getThreadIndex(threads, blocks);
-    int start = width * idx * slices;
-    int middle, end;
+__global__ void gpuMergeSortShared(int* source, int* dest, unsigned long long size,unsigned long long  width,unsigned long long  slices, dim3* threads, dim3* blocks) {
+    unsigned long long idx = getThreadIndex(threads, blocks);
+    unsigned long long  start = width * idx * slices;
+    unsigned long long  middle, end;
 
     // Define shared memory buffer
     __shared__ int sharedMem[SHARED_MEM_SIZE];
