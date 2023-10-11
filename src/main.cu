@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
     cudaDeviceSynchronize();
 
     t_start = time_now();
-    mergeSortShared_p(dev_data,N, config.threads_per_block, config.total_blocks);
+    mergeSort_p(dev_data,N, config.threads_per_block, config.total_blocks);
     t_stop = time_now();
     cudaPeekAtLastError();
     cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost);
@@ -105,14 +105,14 @@ int main(int argc, char *argv[]) {
     }
     zero_array(data, N);
    
-    //.------------------------------------------------------------------- merge sort parallel global memory ---------------------------------------------------------------
+    //.------------------------------------------------------------------- radix sort parallel global memory ---------------------------------------------------------------
     fill_array(data, N);
     cudaMemcpy(dev_data, data, size_array, cudaMemcpyHostToDevice);
     cudaDeviceSynchronize();
 
     t_start = time_now();
     //mergeSort_p(dev_data,N, config.threads_per_block, config.total_blocks);
-    radix_sort<<<1, size_a>>>(dev_data);
+    radixSort<<<1, N>>>(dev_data);
 
     t_stop = time_now();
     cudaPeekAtLastError();
