@@ -8,21 +8,21 @@ double time_now(void)
     // Return the time in seconds with nanosecond precision
     return (ts.tv_sec + (double)ts.tv_nsec / 1e9);
 }
-void zero_array(unsigned short *data, const unsigned long long N){
+void zero_array(int *data, const unsigned long long N){
     for (unsigned long long i = 0; i < N; i++) {
         data[i] = 0;
     }
 }
 
-void print_array(unsigned short* array, unsigned long long size) {
+void print_array(int* array, unsigned long long size) {
     for (unsigned long long i = 0; i < size; i++) {
-        printf("%u ", array[i]); // Assuming 'unsigned short' elements
+        printf("%u ", array[i]); // Assuming 'int' elements
     }
     printf("\n");
 }
 
 // Function to initialize an array with random values within a given range
-void fill_array(unsigned short *data, const unsigned long long N)
+void fill_array(int *data, const unsigned long long N)
 {
     srand(42); // Initialize the random number generator with a seed for determinism
 
@@ -34,9 +34,9 @@ void fill_array(unsigned short *data, const unsigned long long N)
 }
 
 // Function to check if an array is sorted in non-decreasing order
-bool is_sorted(unsigned short* result, const unsigned long long N)
+bool is_sorted(int* result, const unsigned long long N)
 {
-    for (unsigned short i = 0; i < N - 1; i++)
+    for (int i = 0; i < N - 1; i++)
     {
         if (result[i] > result[i + 1])
         {
