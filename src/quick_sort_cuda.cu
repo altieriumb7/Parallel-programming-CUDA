@@ -83,7 +83,6 @@ void quick_sort_p(int d_array[], int d_start, int d_end, int numBlocks, int numT
         }
         else
         {
-            numThreads = 1024;
             numBlocks = partitionSize / numThreads + (partitionSize % numThreads == 0 ? 0 : 1);
         }
         numIterations = partitionSize;

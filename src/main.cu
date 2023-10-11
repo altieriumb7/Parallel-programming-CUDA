@@ -61,9 +61,9 @@ int main(int argc, char *argv[]) {
     print_array(data, N);
 
    
-    /*
+    
     zero_array(data, N);
-
+    
     //----------------------------------------------------------------------------quick sort parallel global memory ------------------------------------------------
     fill_array(data, N);
     cudaMemcpy(dev_data, data, size_array, cudaMemcpyHostToDevice);
@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
     sorted[1]=is_sorted(data,N);
     sorting_time[1] = t_stop - t_start;
     
-    if (sorted[1]==true){
+    if (sorted[1]){
         printf("Sorted properly using Quick Sorting Parallel global mem.");
         printf("Time for sorting: %lf\n", sorting_time[1],' ms\n');
     }else{
@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
    
     //.------------------------------------------------------------------- 
     
-    
+    /*
     int *device_array2;
     cudaMalloc(&device_array2, 1000 * sizeof(int)); // Change the type here
     cudaMemcpy(device_array2, host_array2, 1000 * sizeof(int), cudaMemcpyHostToDevice);
