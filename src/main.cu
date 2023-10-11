@@ -16,7 +16,7 @@
 int main(int argc, char *argv[]) {
     bool sorted[6];
     unsigned long long N = 1024;
-    unsigned short *data, *dev_data;
+    int *data, *dev_data;
     bool stream_inout = false;
     double sorting_time[6],t_start=0,t_stop=0;
 
@@ -35,9 +35,9 @@ int main(int argc, char *argv[]) {
     Config config = determine_config(N);
     config.blockSize = dim3(config.threads_per_block);
     config.gridSize = dim3(config.total_blocks);
-    const size_t size_array = N * sizeof(unsigned short);
+    const size_t size_array = N * sizeof(int);
 
-    data = (unsigned short *)malloc(size_array);
+    data = (int *)malloc(size_array);
     cudaMalloc((void **)&dev_data, size_array);
     
     //----------------------------------------------------------------------------quick sort parallel shared memory ------------------------------------------------
