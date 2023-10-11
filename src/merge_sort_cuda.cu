@@ -52,7 +52,7 @@ __global__ void gpuMergeSort(int* source, int* destination, unsigned long long s
 }
 
 // Mergesort function
-void mergeSort(int* data, unsigned long long size, dim3 threadsPerBlock, dim3 blocksPerGrid) {
+void mergeSort_p(int* data, unsigned long long size, dim3 threadsPerBlock, dim3 blocksPerGrid) {
     int* deviceData;
     int* deviceSwap;
     dim3* deviceThreads;
