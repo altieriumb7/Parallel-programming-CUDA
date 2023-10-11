@@ -54,7 +54,8 @@ void quick_sort_p(unsigned int d_array[], unsigned int d_start, unsigned int d_e
 {
     unsigned int lowStack[d_end - d_start + 1], highStack[d_end - d_start + 1];
 
-    unsigned int top = -1, *d_d, *d_low, *d_high;
+    int top = -1;
+    unsigned int *d_d, *d_low, *d_high;
 
     lowStack[++top] = d_start;
     highStack[top] = d_end;
@@ -155,7 +156,8 @@ void quick_sort_p_shared(unsigned int d_array[], unsigned int d_start, unsigned 
 {
     unsigned int lowStack[d_end - d_start + 1], highStack[d_end - d_start + 1];
 
-    unsigned int top = -1, *d_d, *d_low, *d_high;
+    int top = -1;
+    unsigned int *d_d, *d_low, *d_high;
 
     lowStack[++top] = d_start;
     highStack[top] = d_end;

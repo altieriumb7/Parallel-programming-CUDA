@@ -3,7 +3,7 @@
 // Function to determine the configuration based on N
 Config determine_config(const unsigned long long N)
 {
-    ParallelSortConfig config;
+    Config config;
 
     config.partition_size = PARTITION_SIZE;
 
@@ -11,18 +11,16 @@ Config determine_config(const unsigned long long N)
     config.total_threads = min(N, MAXTHREADSPERBLOCK);
     config.total_blocks = 1;
 
-    // Find the largest power of two <= total_threads
-    for (unsigned long long i = config.total_threads; i >= 2; i--)
-    {
-        if (is_power_of_two(i))
-        {
-            // Adjust configuration based on power of two
-            config.total_threads = i;
-            config.partition_size = ceil(N / float(config.total_threads));
-            config.threads_per_block = config.total_threads;
-            break;
-        }
+    unsigned long long total_threads = config.total_threads;
+    if (total_threads & (total_threads - 1)) {
+        // If total_threads is not a power of two, find the largest power of two less than total_threads
+        total_threads = 1ULL << (unsigned long long)(log2(total_threads));
     }
+
+    config.total_threads = total_threads;
+    config.partition_size = ceil(N / (float)config.total_threads);
+    config.threads_per_block = config.total_threads;
+
 
     // If total_threads is less than WARPSIZE, adjust the values
     if (config.total_threads < WARPSIZE)
@@ -34,59 +32,47 @@ Config determine_config(const unsigned long long N)
     }
 
     // If N is greater than the starting partition size
-    if (N > config.partition_size)
-    {
-        config.total_threads = ceil(N / float(config.partition_size));
+    if (N > config.partition_size) {
+        config.total_threads = ceil(N / (float)config.partition_size);
 
         // If only one block is needed
-        if (config.total_threads <= MAXTHREADSPERBLOCK)
-        {
+        if (config.total_threads <= MAXTHREADSPERBLOCK) {
             config.total_blocks = 1;
-            if (config.total_threads < WARPSIZE)
-            {
+
+            if (config.total_threads < WARPSIZE) {
                 config.total_threads = WARPSIZE;
-                config.threads_per_block = WARPSIZE;
-            }
-            else
-            {
-                config.threads_per_block = config.total_threads;
             }
 
+            config.threads_per_block = config.total_threads;
+
             // Find the largest power of two <= total_threads
-            for (unsigned long i = config.total_threads; i >= 2; i--)
-            {
-                if (is_power_of_two(i))
-                {
-                    // Adjust configuration based on power of two
-                    config.total_threads = i;
-                    config.partition_size = ceil(N / float(config.total_threads));
-                    config.threads_per_block = config.total_threads;
-                    break;
-                }
+            unsigned long largestPowerOfTwo = 1;
+            while (largestPowerOfTwo * 2 <= config.total_threads) {
+                largestPowerOfTwo *= 2;
             }
+
+            config.total_threads = largestPowerOfTwo;
+            config.partition_size = ceil(N / (float)config.total_threads);
+            config.threads_per_block = config.total_threads;
         }
         // If more than one block is needed
-        else
-        {
+        else {
             config.threads_per_block = MAXTHREADSPERBLOCK;
-            config.total_blocks = min(ceil(config.total_threads / float(config.threads_per_block)), MAXBLOCKS);
+            config.total_blocks = fmin(ceil(config.total_threads / (float)config.threads_per_block), MAXBLOCKS);
+
             config.total_threads = config.total_blocks * config.threads_per_block;
 
             // Find the largest power of two <= total_threads
-            for (unsigned long i = config.total_threads; i >= 2; i--)
-            {
-                config.total_blocks = min(ceil(i / float(MAXTHREADSPERBLOCK)), MAXBLOCKS);
-                config.total_threads = config.total_blocks * config.threads_per_block;
-
-                if (is_power_of_two(config.total_threads))
-                {
-                    // Adjust configuration based on power of two
-                    config.partition_size = ceil(N / float(config.total_threads));
-                    break;
-                }
+            unsigned long largestPowerOfTwo = 1;
+            while (largestPowerOfTwo * 2 <= config.total_threads) {
+                largestPowerOfTwo *= 2;
             }
+
+            config.total_threads = largestPowerOfTwo;
+            config.partition_size = ceil(N / (float)config.total_threads);
         }
     }
+
 
     // Calculate the required shared memory and maximum shared memory per block
     config.required_shared_memory = N * sizeof(unsigned short) / config.total_blocks;
