@@ -121,10 +121,32 @@ int main(int argc, char *argv[]) {
     sorting_time[3] = t_stop - t_start;
     
     if (sorted[3]){
-        printf("Sorted properly using Merge Sorting Parallel global mem.");
+        printf("Sorted properly using Radix Sorting Parallel global mem.");
         printf("Time for sorting: %lf\n", sorting_time[3],' ms\n');
     }else{
-        printf("Error in sorting merge sort global mem");
+        printf("Error in sorting radix sort global mem");
+    }
+    zero_array(data, N);
+    //-------------------------------------------------------------------radix sort parallel shared memery---------------------------------------------------------------------
+    fill_array(data, N);
+    cudaMemcpy(dev_data, data, size_array, cudaMemcpyHostToDevice);
+    cudaDeviceSynchronize();
+
+    t_start = time_now();
+    //mergeSort_p(dev_data,N, config.threads_per_block, config.total_blocks);
+    radixSortShared<<<1, N>>>(dev_data);
+
+    t_stop = time_now();
+    cudaPeekAtLastError();
+    cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost);
+    sorted[3]=is_sorted(data,N);
+    sorting_time[3] = t_stop - t_start;
+    
+    if (sorted[3]){
+        printf("Sorted properly using Radix Sorting Parallel global mem.");
+        printf("Time for sorting: %lf\n", sorting_time[3],' ms\n');
+    }else{
+        printf("Error in sorting radix sort global mem");
     }
     zero_array(data, N);
     
