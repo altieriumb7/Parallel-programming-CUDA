@@ -4,22 +4,94 @@
 #include <string.h>
 #include <cuda.h>
 #include <assert.h>
+#include <cuda_runtime.h>
+
 #include "../lib/merge_sort.cuh"
 #include "../lib/utils.cuh"
 #include "../lib/quick_sort.cuh"
 #include "../lib/radix_sort.cuh"
-#include "../lib/utilsParallelSort.cuh"
-#include <cuda_runtime.h>
-
-#define size 10000
+#include "../lib/constants.cuh"
+#include "../lib/utils_conf.cuh"
 
 int main() {
     // Your existing code for sorting 'arr' goes here
-    ParallelSortConfig sort_config = determine_config(5000);
+    unsigned long long N = 512;
+    bool sorted[6];
 
-    sort_config.blockSize = dim3(sort_config.threads_per_block);
-    sort_config.gridSize = dim3(sort_config.total_blocks);
+    double elapsed_time[6];// 6 algorithms to test
+    unsigned long long N = 1024;
+    unsigned int *data, *dev_data;
+    bool stream_inout = false;
+    double sorting_time[6],t_start=0,t_stop=0;
+
+    for (int i = 1; i < argc; i++)
+    {
+        if (strcmp(argv[i], "-w") == 0)
+        {
+            stream_inout = true;
+        }
+        else
+        {
+            N = atoi(argv[i]);
+        }
+    }
     
+    Config config = determine_config(N);
+    config.blockSize = dim3(config.threads_per_block);
+    config.gridSize = dim3(config.total_blocks);
+    const size_t size_array = N * sizeof(unsigned int);
+
+    data = (unsigned int *)malloc(size_array);
+    cudaHandleError(cudaMalloc((void **)&dev_data, size_array));
+    
+    //----------------------------------------------------------------------------quick sort parallel global memory ------------------------------------------------
+    fill_array(data, N);
+    cudaHandleError(cudaMemcpy(dev_data, data, size_array, cudaMemcpyHostToDevice));
+    cudaDeviceSynchronize();
+
+    t_start = time_now();
+    quick_sort_p_shared(dev_data, 0, N - 1);
+    t_stop = time_now();
+    cudaHandleError(cudaPeekAtLastError());
+    cudaHandleError(cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost));
+    sorted[0]=is_sorted(data,N);
+    sorting_time[0] = t_stop - t_start;
+    bzero(data, size_array);
+
+    //----------------------------------------------------------------------------quick sort parallel shared memory ------------------------------------------------
+    fill_array(data, N);
+    cudaHandleError(cudaMemcpy(dev_data, data, size_array, cudaMemcpyHostToDevice));
+    cudaDeviceSynchronize();
+
+    t_start = time_now();
+    quick_sort_p(dev_data, 0, N - 1);
+    t_stop = time_now();
+    cudaHandleError(cudaPeekAtLastError());
+    cudaHandleError(cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost));
+    sorted[1]=is_sorted(data,N);
+    sorting_time[1] = t_stop - t_start;
+    bzero(data, size_array);
+
+    printf("Sorted Quick Sorting Parallel glob. mem.: %d\n", sorted[0]);
+    printf("Time for sorting: %lf\n", sorting_time[0]);
+
+    printf("Sorted Quick Sorting Parallel shared mem.: %d\n", sorted[1]);
+    printf("Time for sorting: %lf\n", sorting_time[1]);
+
+
+   
+    //.------------------------------------------------------------------- 
+
+    /*
+    int *device_array2;
+    cudaMalloc(&device_array2, 1000 * sizeof(int)); // Change the type here
+    cudaMemcpy(device_array2, host_array2, 1000 * sizeof(int), cudaMemcpyHostToDevice);
+    quickSortIterative_shared(device_array2, 0, 1000 - 1); 
+
+
+    cudaMemcpy(host_array2, device_array2, 1000 * sizeof(unsigned int), cudaMemcpyDeviceToHost);
+
+    //-----
     int arr[5000];
     srand(time(NULL));
     for (int i = 0; i < 5000; i++) {
@@ -87,7 +159,7 @@ int main() {
     }
 
     // Sort the data using mergesort
-    mergesort(data, size_data, sort_config.threads_per_block, sort_config.total_blocks);
+    mergesort(data, size_data, config.threads_per_block, config.total_blocks);
 
     // Check if the array is sorted
     if (isSorted(data, size_data)) {
@@ -164,6 +236,6 @@ int main() {
 
     // Cleanup
     cudaFree(device_array2);
-    
+    */
     return 0;
 }

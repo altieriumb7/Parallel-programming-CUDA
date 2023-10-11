@@ -7,22 +7,22 @@
 #include <cuda_runtime.h>
 #include "../lib/constants.cuh"
 
-
 // GPU helper function for bottom-up merge
-__device__ void gpu_bottomUpMerge(long* source, long* dest, long start, long middle, long end);
-
-// GPU helper function to calculate the id of the current thread
-__device__ unsigned int getIdx(dim3* threads, dim3* blocks);
+__device__ void gpuBottomUpMerge(unsigned int* src, unsigned int* dest, unsigned int start, unsigned int middle, unsigned int end);
 
 // GPU mergesort kernel
-__global__ void gpu_mergesort(long* source, long* dest, long size, long width, long slices, dim3* threads, dim3* blocks);
+__global__ void gpuMergeSort(unsigned int* source, unsigned int* destination, unsigned long long size, unsigned int width, unsigned int slices, dim3* threads, dim3* blocks);
+
 // Mergesort function
-void mergesort(long* data, long size, dim3 threadsPerBlock, dim3 blocksPerGrid);
-int isSorted(long* data, long size);
+void mergeSort(unsigned int* data, unsigned long long size, dim3 threadsPerBlock, dim3 blocksPerGrid);
 
+// GPU helper function for bottom-up merge with shared memory
+__device__ void gpuBottomUpMerge(unsigned int* source, unsigned int* dest, unsigned int start, unsigned int middle, unsigned int end, unsigned int* sharedMem);
 
+// GPU mergesort kernel with shared memory
+__global__ void gpuMergeSortShared(unsigned int* source, unsigned int* dest, unsigned long long size, unsigned int width, unsigned int slices, dim3* threads, dim3* blocks);
 
-//------------
-__global__ void gpu_mergesort_shared(long* source, long* dest, long size, long width, long slices, dim3* threads, dim3* blocks);
-__device__ void gpu_bottomUpMerge(long* source, long* dest, long start, long middle, long end, long* shared_mem);
-void mergesort_shared(long* data, long size, dim3 threadsPerBlock, dim3 blocksPerGrid);
+// Mergesort function with shared memory
+void mergeSortShared(unsigned int* data, unsigned long long size, dim3 threadsPerBlock, dim3 blocksPerGrid);
+
+__device__ unsigned int getThreadIndex(dim3* threads, dim3* blocks);
