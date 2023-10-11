@@ -53,14 +53,14 @@ int main(int argc, char *argv[]) {
     sorted[0]=is_sorted(data,N);
     sorting_time[0] = t_stop - t_start;
     if (sorted[0]==true){
-        printf("Sorted Quick Sorting Parallel glob. mem.: %d\n", sorted[0]);
+        printf("Sorted properly using Quick Sorting Parallel shared mem.");
         printf("Time for sorting: %lf\n", sorting_time[0],' ms\n');
     }else{
         printf("Error in sorting quick sort shared mem");
     }
    
     
-    memset(data, 0, size_array);
+    zero_array(data, size_array);
 
     //----------------------------------------------------------------------------quick sort parallel global memory ------------------------------------------------
     fill_array(data, N);
@@ -76,12 +76,12 @@ int main(int argc, char *argv[]) {
     sorting_time[1] = t_stop - t_start;
     
     if (sorted[1]==true){
-        printf("Sorted Quick Sorting Parallel glob. mem.: %d\n", sorted[1]);
+        printf("Sorted properly using Quick Sorting Parallel global mem.");
         printf("Time for sorting: %lf\n", sorting_time[1],' ms\n');
     }else{
-        printf("Error in sorting quick sort shared mem");
+        printf("Error in sorting quick sort global mem");
     }
-    memset(data, 0, size_array);
+    zero_array(data, size_array);
 
 
    

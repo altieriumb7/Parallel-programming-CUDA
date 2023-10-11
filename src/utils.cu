@@ -8,7 +8,11 @@ double time_now(void)
     // Return the time in seconds with nanosecond precision
     return (ts.tv_sec + (double)ts.tv_nsec / 1e9);
 }
-
+void zero_array(unsigned int *data, const unsigned long long N){
+    for (int i = 0; i < N; i++) {
+        data[i] = 0;
+    }
+}
 // Function to initialize an array with random values within a given range
 void fill_array(unsigned int *data, const unsigned long long N)
 {

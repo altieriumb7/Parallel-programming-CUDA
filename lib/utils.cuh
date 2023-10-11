@@ -12,6 +12,7 @@
 
 
 double time_now(void);
+void zero_array(unsigned int *data, const unsigned long long N);
 
 void fill_array(unsigned int *data, const unsigned long long N);
 
