@@ -7,7 +7,6 @@
 #include <time.h>
 #include "../lib/constants.cuh"
 
-__device__ unsigned int d_partitionSize;
 
 __global__ void partition(unsigned int *d_data, unsigned int *d_low, unsigned int *d_high, unsigned int d_size);
 
