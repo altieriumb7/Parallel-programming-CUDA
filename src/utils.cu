@@ -9,7 +9,7 @@ double time_now(void)
     return (ts.tv_sec + (double)ts.tv_nsec / 1e9);
 }
 void zero_array(unsigned int *data, const unsigned long long N){
-    for (int i = 0; i < N; i++) {
+    for (unsigned long long i = 0; i < N; i++) {
         data[i] = 0;
     }
 }
