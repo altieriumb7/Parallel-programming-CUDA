@@ -13,7 +13,7 @@
 #include "../lib/constants.cuh"
 #include "../lib/utils_conf.cuh"
 
-int main() {
+int main(int argc, char *argv[]) {
     // Your existing code for sorting 'arr' goes here
     unsigned long long N = 512;
     bool sorted[6];
