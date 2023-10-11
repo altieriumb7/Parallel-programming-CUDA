@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
     cudaDeviceSynchronize();
 
     t_start = time_now();
-    quick_sort_p_shared(dev_data, 0, N - 1,config.blockSize.x,config.gridSize.x);
+    quick_sort_p(dev_data, 0, N - 1,config.blockSize.x,config.gridSize.x);
     t_stop = time_now();
     cudaPeekAtLastError();
     cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost);
