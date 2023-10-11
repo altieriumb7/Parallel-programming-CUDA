@@ -55,8 +55,9 @@ int main(int argc, char *argv[]) {
     sorting_time[3] = t_stop - t_start;
     
     if (sorted[3]){
-        printf("Sorted properly using Radix Sorting Parallel global mem.");
-        printf("Time for sorting: %lf\n", sorting_time[3],' ms\n');
+        printf("Sorted properly using Radix Sorting Parallel global mem.\n");
+        printf("Time for sorting: %lf ms\n", sorting_time[3]);
+
     }else{
         printf("Error in sorting radix sort global mem");
     }
@@ -76,8 +77,9 @@ int main(int argc, char *argv[]) {
     sorting_time[4] = t_stop - t_start;
     
     if (sorted[4]){
-        printf("Sorted properly using Radix Sorting Parallel shared mem.");
-        printf("Time for sorting: %lf\n", sorting_time[3],' ms\n');
+        printf("Sorted properly using Radix Sorting Parallel shared mem.\n");
+        printf("Time for sorting: %lf ms\n", sorting_time[4]);
+
     }else{
         printf("Error in sorting radix sort shared mem");
     }
@@ -95,8 +97,8 @@ int main(int argc, char *argv[]) {
     sorted[0]=is_sorted(data,N);
     sorting_time[0] = t_stop - t_start;
     if (sorted[0]){
-        printf("Sorted properly using Quick Sorting Parallel shared mem.");
-        printf("Time for sorting: %lf\n", sorting_time[0]," ms\n");
+        printf("Sorted properly using Quick Sorting Parallel shared mem.\n");
+        printf("Time for sorting: %lf ms\n", sorting_time[0]);
     }else{
         printf("Error in sorting quick sort shared mem");
     }
@@ -119,8 +121,8 @@ int main(int argc, char *argv[]) {
     sorting_time[1] = t_stop - t_start;
     
     if (sorted[1]){
-        printf("Sorted properly using Quick Sorting Parallel global mem.");
-        printf("Time for sorting: %lf\n", sorting_time[1],' ms\n');
+        printf("Sorted properly using Quich Sorting Parallel global mem.\n");
+        printf("Time for sorting: %lf ms\n", sorting_time[1]);
     }else{
         printf("Error in sorting quick sort global mem");
     }
@@ -140,13 +142,13 @@ int main(int argc, char *argv[]) {
     sorting_time[2] = t_stop - t_start;
     
     if (sorted[2]){
-        printf("Sorted properly using Merge Sorting Parallel shared mem.");
-        printf("Time for sorting: %lf\n", sorting_time[2],' ms\n');
+        printf("Sorted properly using Merge Sorting Parallel global mem.\n");
+        printf("Time for sorting: %lf ms\n", sorting_time[2]);
     }else{
         printf("Error in sorting merge sort shared mem");
     }
     zero_array(data, N);
-   
+    return 0;
     
     
 
