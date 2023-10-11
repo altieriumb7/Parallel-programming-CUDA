@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
     }
     zero_array(data, N);
     if (N>10000){
-        print("Quick Sort implementation is just dimostrative of different attempt of realize a right CUDA implementation, the acceptabile time to wait is with N=10k");
+        printf("\nQuick Sort implementation is just dimostrative of different attempt of realize a right CUDA implementation, the acceptabile time to wait is with N=10k");
         return 0;
     }
     //----------------------------------------------------------------------------merge sort parallel global memory ------------------------------------------------
