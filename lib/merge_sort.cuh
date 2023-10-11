@@ -25,4 +25,4 @@ __global__ void gpuMergeSortShared(int* source, int* dest, unsigned long long si
 void mergeSortShared(int* data, unsigned long long size, dim3 threadsPerBlock, dim3 blocksPerGrid);
 
 
-__device__ unsigned int getThreadIndex(dim3* threads, dim3* blocks);
+__device__ int getThreadIndex(dim3* threads, dim3* blocks);
