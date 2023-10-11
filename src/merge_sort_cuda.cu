@@ -81,6 +81,7 @@ void mergeSort(int* data, unsigned long long size, dim3 threadsPerBlock, dim3 bl
         long slices = size / (nThreads * width) + 1;
 
         gpuMergeSort<<<blocksPerGrid, threadsPerBlock>>>(A, B, size, width, slices, deviceThreads, deviceBlocks);
+        __syncthreads();
 
         // Swap pointers A and B
         int* temp = A;
