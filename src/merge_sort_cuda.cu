@@ -104,9 +104,9 @@ __host__ void merge_sort_seq(int *data, const unsigned long long left, const uns
     {
         unsigned long long mid = left + (right - left) / 2;
 
-        merge_sort(data, left, mid);
+        merge_sort_seq(data, left, mid);
 
-        merge_sort(data, mid + 1, right);
+        merge_sort_seq(data, mid + 1, right);
 
         // Merge the two halves
         
