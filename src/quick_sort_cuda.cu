@@ -82,7 +82,8 @@ void quick_sort_p(int d_array[], int d_start, int d_end, int numBlocks, int numT
             numThreads = partitionSize;
         }
         else
-        {
+        {   
+            numThreads=1024;
             numBlocks = partitionSize / numThreads + (partitionSize % numThreads == 0 ? 0 : 1);
         }
         numIterations = partitionSize;
@@ -179,7 +180,9 @@ void quick_sort_p_shared(int d_array[], int d_start, int d_end, int numBlocks, i
             numThreads = partitionSize;
         }
         else
-        {
+        {   
+            numThreads=1024;
+
             numBlocks = partitionSize / numThreads + (partitionSize % numThreads == 0 ? 0 : 1);
         }
         numIterations = partitionSize;
