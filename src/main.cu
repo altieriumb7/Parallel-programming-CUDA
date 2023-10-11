@@ -58,7 +58,6 @@ int main(int argc, char *argv[]) {
     }else{
         printf("Error in sorting quick sort shared mem");
     }
-    print_array(data, N);
 
    
     
@@ -84,20 +83,32 @@ int main(int argc, char *argv[]) {
         printf("Error in sorting quick sort global mem");
     }
     zero_array(data, N);
+    //----------------------------------------------------------------------------merge sort parallel global memory ------------------------------------------------
 
+    fill_array(data, N);
+    cudaMemcpy(dev_data, data, size_array, cudaMemcpyHostToDevice);
+    cudaDeviceSynchronize();
 
+    t_start = time_now();
+    mergeSortShared(data,N, config.threads_per_block, config.total_blocks);
+    t_stop = time_now();
+    cudaPeekAtLastError();
+    cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost);
+    sorted[2]=is_sorted(data,N);
+    sorting_time[2] = t_stop - t_start;
+    
+    if (sorted[2]){
+        printf("Sorted properly using Merge Sorting Parallel shared mem.");
+        printf("Time for sorting: %lf\n", sorting_time[2],' ms\n');
+    }else{
+        printf("Error in sorting quick sort global mem");
+    }
+    zero_array(data, N);
    
     //.------------------------------------------------------------------- 
     
     /*
-    int *device_array2;
-    cudaMalloc(&device_array2, 1000 * sizeof(int)); // Change the type here
-    cudaMemcpy(device_array2, host_array2, 1000 * sizeof(int), cudaMemcpyHostToDevice);
-    quickSortIterative_shared(device_array2, 0, 1000 - 1); 
-
-
-    cudaMemcpy(host_array2, device_array2, 1000 * sizeof(unsigned int), cudaMemcpyDeviceToHost);
-
+    
     //-----
     int arr[5000];
     srand(time(NULL));

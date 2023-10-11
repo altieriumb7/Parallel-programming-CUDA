@@ -8,21 +8,21 @@
 #include "../lib/constants.cuh"
 
 // GPU helper function for bottom-up merge
-__device__ void gpuBottomUpMerge(unsigned int* src, unsigned int* dest, unsigned int start, unsigned int middle, unsigned int end);
-
+__device__ void gpuBottomUpMerge(int* src, int* dest, int start, int middle, int end);
 // GPU mergesort kernel
-__global__ void gpuMergeSort(unsigned int* source, unsigned int* destination, unsigned long long size, unsigned int width, unsigned int slices, dim3* threads, dim3* blocks);
-
+__global__ void gpuMergeSort(int* source, int* destination, unsigned long long size, int width, int slices, dim3* threads, dim3* blocks);
 // Mergesort function
-void mergeSort(unsigned int* data, unsigned long long size, dim3 threadsPerBlock, dim3 blocksPerGrid);
+void mergeSort( int* data, unsigned long long size, dim3 threadsPerBlock, dim3 blocksPerGrid);
+
 
 // GPU helper function for bottom-up merge with shared memory
-__device__ void gpuBottomUpMerge(unsigned int* source, unsigned int* dest, unsigned int start, unsigned int middle, unsigned int end, unsigned int* sharedMem);
+__device__ void gpuBottomUpMergeShared(int* source, int* dest, int start, int middle, int end, int* sharedMem);
 
-// GPU mergesort kernel with shared memory
-__global__ void gpuMergeSortShared(unsigned int* source, unsigned int* dest, unsigned long long size, unsigned int width, unsigned int slices, dim3* threads, dim3* blocks);
+// GPU mergesort kernel
+__global__ void gpuMergeSortShared(int* source, int* dest, unsigned long long size, int width, int slices, dim3* threads, dim3* blocks);
 
-// Mergesort function with shared memory
-void mergeSortShared(unsigned int* data, unsigned long long size, dim3 threadsPerBlock, dim3 blocksPerGrid);
+// Mergesort function
+void mergeSortShared(int* data, unsigned long long size, dim3 threadsPerBlock, dim3 blocksPerGrid);
+
 
 __device__ unsigned int getThreadIndex(dim3* threads, dim3* blocks);
