@@ -149,15 +149,10 @@ int main(int argc, char *argv[]) {
     zero_array(data, N);
     //------------------------------------------------------------------------------merge sort sequential
     fill_array(data, N);
-    cudaMemcpy(dev_data, data, size_array, cudaMemcpyHostToDevice);
-    cudaDeviceSynchronize();
-
     t_start = time_now();
-    merge_sort_seq(dev_data,0,N-1);
-
+    merge_sort_seq(data,0,N-1);
     t_stop = time_now();
     cudaPeekAtLastError();
-    cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost);
     sorted[4]=is_sorted(data,N);
     sorting_time[4] = t_stop - t_start;
     
@@ -168,6 +163,7 @@ int main(int argc, char *argv[]) {
         printf("Error in sorting merge sort sequentil");
     }
     zero_array(data, N);
+    return;
 
     /*
     
