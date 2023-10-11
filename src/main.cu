@@ -84,6 +84,31 @@ int main(int argc, char *argv[]) {
         printf("Error in sorting radix sort shared mem");
     }
     zero_array(data, N);
+    if (N>10000){
+        print("Quick Sort implementation is just dimostrative of different attempt of realize a right CUDA implementation, the acceptabile time to wait is with N=10k");
+        return 0;
+    }
+    //----------------------------------------------------------------------------merge sort parallel global memory ------------------------------------------------
+
+    fill_array(data, N);
+    cudaMemcpy(dev_data, data, size_array, cudaMemcpyHostToDevice);
+    cudaDeviceSynchronize();
+
+    t_start = time_now();
+    mergeSort_p(dev_data,N, config.threads_per_block, config.total_blocks);
+    t_stop = time_now();
+    cudaPeekAtLastError();
+    cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost);
+    sorted[2]=is_sorted(data,N);
+    sorting_time[2] = t_stop - t_start;
+    
+    if (sorted[2]){
+        printf("Sorted properly using Merge Sorting Parallel global mem.\n");
+        printf("Time for sorting: %lf s\n", sorting_time[2]);
+    }else{
+        printf("Error in sorting merge sort shared mem");
+    }
+    zero_array(data, N);
     //----------------------------------------------------------------------------quick sort parallel shared memory ------------------------------------------------
     fill_array(data, N);
     cudaMemcpy(dev_data, data, size_array, cudaMemcpyHostToDevice);
@@ -127,27 +152,7 @@ int main(int argc, char *argv[]) {
         printf("Error in sorting quick sort global mem");
     }
     zero_array(data, N);
-    //----------------------------------------------------------------------------merge sort parallel global memory ------------------------------------------------
-
-    fill_array(data, N);
-    cudaMemcpy(dev_data, data, size_array, cudaMemcpyHostToDevice);
-    cudaDeviceSynchronize();
-
-    t_start = time_now();
-    mergeSort_p(dev_data,N, config.threads_per_block, config.total_blocks);
-    t_stop = time_now();
-    cudaPeekAtLastError();
-    cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost);
-    sorted[2]=is_sorted(data,N);
-    sorting_time[2] = t_stop - t_start;
     
-    if (sorted[2]){
-        printf("Sorted properly using Merge Sorting Parallel global mem.\n");
-        printf("Time for sorting: %lf s\n", sorting_time[2]);
-    }else{
-        printf("Error in sorting merge sort shared mem");
-    }
-    zero_array(data, N);
     return 0;
     
     
