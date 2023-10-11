@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
     cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost);
     sorted[0]=is_sorted(data,N);
     sorting_time[0] = t_stop - t_start;
-    if (sorted[0]==true){
+    if (sorted[0]){
         printf("Sorted properly using Quick Sorting Parallel shared mem.");
         printf("Time for sorting: %lf\n", sorting_time[0]," ms\n");
     }else{
