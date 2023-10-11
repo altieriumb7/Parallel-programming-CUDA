@@ -151,7 +151,7 @@ __global__ void gpuMergeSortShared(int* source, int* dest, unsigned long long si
 }
 
 // Mergesort function
-void mergeSortShared(int* data, unsigned long long size, dim3 threadsPerBlock, dim3 blocksPerGrid) {
+void mergeSortShared_p(int* data, unsigned long long size, dim3 threadsPerBlock, dim3 blocksPerGrid) {
     int* deviceData;
     int* deviceSwap;
     dim3* deviceThreads;
