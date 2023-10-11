@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
     cudaDeviceSynchronize();
 
     t_start = time_now();
-    mergeSortShared(data,N, config.threads_per_block, config.total_blocks);
+    mergeSort(data,N, config.threads_per_block, config.total_blocks);
     t_stop = time_now();
     cudaPeekAtLastError();
     cudaMemcpy(data, dev_data, size_array, cudaMemcpyDeviceToHost);
