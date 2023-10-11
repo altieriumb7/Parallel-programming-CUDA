@@ -84,10 +84,7 @@ int main(int argc, char *argv[]) {
         printf("Error in sorting radix sort shared mem");
     }
     zero_array(data, N);
-    if (N>10000){
-        printf("\nQuick Sort implementation is just dimostrative of different attempt of realize a right CUDA implementation, the acceptabile time to wait is with N=10k");
-        return 0;
-    }
+    
     //----------------------------------------------------------------------------merge sort parallel global memory ------------------------------------------------
 
     fill_array(data, N);
@@ -110,6 +107,10 @@ int main(int argc, char *argv[]) {
     }
     zero_array(data, N);
     //----------------------------------------------------------------------------quick sort parallel shared memory ------------------------------------------------
+    if (N>10000){
+        printf("\nQuick Sort implementation is just dimostrative of different attempt of realize a right CUDA implementation, the acceptabile time to wait is with N=10k");
+        return 0;
+    }
     fill_array(data, N);
     cudaMemcpy(dev_data, data, size_array, cudaMemcpyHostToDevice);
     cudaDeviceSynchronize();
