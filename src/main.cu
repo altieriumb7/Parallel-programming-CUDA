@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
     }else{
         printf("Error in sorting merge sort shared mem");
     }
-    print_array(data,N)
+    print_array(data,N);
     zero_array(data, N);
    
     //.------------------------------------------------------------------- 
