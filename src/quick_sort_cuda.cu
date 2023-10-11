@@ -69,7 +69,8 @@ void quick_sort_p(unsigned int d_array[], unsigned int d_start, unsigned int d_e
     cudaMalloc(&d_high, (d_end - d_start + 1) * sizeof(unsigned int));
     cudaMemcpy(d_high, highStack, (d_end - d_start + 1) * sizeof(unsigned int), cudaMemcpyHostToDevice);
 
-    
+    numThreads = 1;
+    numBlocks = 1;
     unsigned int numIterations = 1;
 
     while (numIterations > 0)
@@ -170,8 +171,9 @@ void quick_sort_p_shared(unsigned int d_array[], unsigned int d_start, unsigned 
     cudaMalloc(&d_high, (d_end - d_start + 1) * sizeof(unsigned int));
     cudaMemcpy(d_high, highStack, (d_end - d_start + 1) * sizeof(unsigned int), cudaMemcpyHostToDevice);
 
-    
-    unsigned int numIterations = 1;
+    unsigned int numThreads = 1;
+    numBlocks = 1;
+    numIterations = 1;
 
     while (numIterations > 0)
     {
