@@ -50,7 +50,7 @@ __global__ void partition(unsigned int *d_data, unsigned int *d_low, unsigned in
 }
 
 // Host function for iterative quicksort on the GPU
-void quick_sort_p(unsigned int d_array[], unsigned int d_start, unsigned int d_end)
+void quick_sort_p(unsigned int d_array[], unsigned int d_start, unsigned int d_end,unsigned int numBlocks, unsigned int numThreads)
 {
     unsigned int lowStack[d_end - d_start + 1], highStack[d_end - d_start + 1];
 
@@ -152,7 +152,7 @@ __global__ void partition_shared(unsigned int *d_array, unsigned int *d_low, uns
 }
 
 // Host function for iterative quicksort on the GPU using shared memory
-void quick_sort_p_shared(unsigned int d_array[], unsigned int d_start, unsigned int d_end)
+void quick_sort_p_shared(unsigned int d_array[], unsigned int d_start, unsigned int d_end, unsigned int numBlocks, unsigned int numThreads)
 {
     unsigned int lowStack[d_end - d_start + 1], highStack[d_end - d_start + 1];
 
